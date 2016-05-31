@@ -1,0 +1,12 @@
+Change the numbers below as necessary. Radius of boundary is 10. Radius of spheres is 1
+Number_Of_Spheres:
+8
+Initial positions/velocities:
+Pos: -1.647047 0.197113 Vel: 0.482044 0.060296
+Pos: 1.916417 -3.309600 Vel: 0.550171 0.772079
+Pos: 0.792401 2.343900 Vel: 0.962023 0.991914
+Pos: 1.692886 -0.227529 Vel: 0.238461 0.358325
+Pos: -2.752070 -2.065784 Vel: 0.950765 0.276993
+Pos: -1.803250 3.233744 Vel: 0.889951 0.760183
+Pos: -3.964129 0.232913 Vel: 0.270159 0.005657
+Pos: -0.028218 -2.442486 Vel: 0.385251 0.256473
