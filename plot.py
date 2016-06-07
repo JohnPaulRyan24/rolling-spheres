@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import sys
 
 path = "examples/"+sys.argv[1]
+name = sys.argv[2]
 
-f = open(path+"/energies.txt", "r")
+f = open(path+"/"+name+".txt", "r")
 lines = f.readlines()
 times = []
 energies = []

@@ -3,7 +3,7 @@ import numpy as np
 import math
 import sys
 
-MU = float(sys.argv[2])
+MU =0# float(sys.argv[2])
 
 scene2 = display(title = "Animation - Mu="+str(MU),x=900)
 verb = int(sys.argv[3])
@@ -66,7 +66,7 @@ def update_velocities():
 inp = open("examples/"+path+"/input.txt","r")
 inplines = inp.readlines()
 num_of_spheres = int(inplines[2])
-for i in range(4,len(inplines)):
+for i in range(4,num_of_spheres+4):
     line = inplines[i].split(" ")
     positions.append([float(line[1]),float(line[2])])
     velocities.append([float(line[4]),float(line[5])])

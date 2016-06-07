@@ -2,5 +2,5 @@ Change the numbers below as necessary. Radius of boundary is 10. Radius of spher
 Number_Of_Spheres:
 2
 Initial positions/velocities: 
-Pos: 0 0 Vel: 0 1
-Pos: 2.1 0 Vel: 0 0
+Pos: -2 0 Vel: 1 0
+Pos: 2 0 Vel: 0 0
