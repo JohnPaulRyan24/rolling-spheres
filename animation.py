@@ -3,9 +3,10 @@ import numpy as np
 import math
 import sys
 
-MU =0# float(sys.argv[2])
+MU =float(sys.argv[2])
 
 scene2 = display(title = "Animation - Mu="+str(MU),x=900)
+MU=0
 verb = int(sys.argv[3])
 if(verb==1):
     verbose = True
@@ -17,7 +18,7 @@ positions = []
 velocities = []
 
 boundpos = [0.0,0.0]
-boundvel = [0,0.0]
+boundvel = [float(sys.argv[4]),0.0]
 SPEED = 2000
 BOUNDRAD = 5
 
@@ -65,20 +66,26 @@ def update_velocities():
 
 inp = open("examples/"+path+"/input.txt","r")
 inplines = inp.readlines()
-num_of_spheres = int(inplines[2])
-for i in range(4,num_of_spheres+4):
+num_of_spheres = int(sys.argv[5])
+for i in range(1,num_of_spheres+1):
     line = inplines[i].split(" ")
     positions.append([float(line[1]),float(line[2])])
     velocities.append([float(line[4]),float(line[5])])
 spheres = []
 flag=True
+count=0
 for p in positions:
-    if(flag):
-        spheres.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.blue, make_trail=True))
+    if(count==0):
+        spheres.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.blue))#, make_trail=True))
         flag=False
-    else:
+    elif(count==1):
         spheres.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.red))
-
+    elif(count==2):
+        spheres.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.green))
+    count+=1
+    count = count%3
+    
+            
 out = open("examples/"+path+"/output.txt","r")
 lines = out.readlines()
 t = 0
@@ -92,10 +99,11 @@ for line in lines:
     if(ID==-1): #swirl event
         nonce = int(l[8])
         time = float(l[3])
-        while(t<time):
-            update_positions()
-            t+=DELTA
-            rate(SPEED)
+        if(nonce!=prev_nonce):
+            while(t<time):
+                update_positions()
+                t+=DELTA
+                rate(SPEED)
         boundpos[0] = float(l[4])
         boundpos[1] = float(l[5])
         boundvel[0] = float(l[6])

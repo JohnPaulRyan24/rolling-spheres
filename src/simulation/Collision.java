@@ -32,9 +32,10 @@ public class Collision {
 		return spheres.length<2;
 	}
 	
-	public void newProcess(){
+	public void process(){
 		if(isBoundary()){
 			Sphere s = spheres[0];
+			
 			Vector boundvel = new Vector(Spheres.boundvel);
 			double[] rad_arg = {s.pos[0]-Spheres.boundpos[0],s.pos[1]-Spheres.boundpos[1]};
 			Vector rad = new Vector(rad_arg);
@@ -79,6 +80,7 @@ public class Collision {
 			//we need to change the velocities according to the formula from wiki
 			Sphere s1 = spheres[0];
 			Sphere s2 = spheres[1];
+			//System.out.println(Spheres.distance(s1,s2));
 			Vector v1 = new Vector(s1.vel);
 			Vector v2 = new Vector(s2.vel);
 			Vector x1 = new Vector(s1.pos);
@@ -117,12 +119,7 @@ public class Collision {
 				newPar1 = new Vector(temp);
 			}
 			s1.vel = newPerp1.add(newPar1).toArray();
-			
-			
-			
-			
-			
-			
+				
 			unit = unit.times(-1);
 			Vector newPerp2 = unit.times(s2vel.dot(unit));
 			Vector par2 = s2vel.minus(newPerp2);
@@ -140,68 +137,9 @@ public class Collision {
 				double[] temp = {0,0};
 				newPar2 = new Vector(temp);
 			}
-			s2.vel = newPerp2.add(newPar2).toArray();
-			
-			
-		}
-		
-		
-		
-		
-		
-		
-		
-	}
-	public void process(){//this only changes velocities
-		if(Constants.newProcess){
-			this.newProcess();
-			return;
-		}
-		
-		if(isBoundary()){
-			
-			Sphere s = spheres[0];
-			//vector is simply rotated about radius to point of contact, then negated
-			double theta = Math.atan((s.pos[1]-Spheres.boundpos[1])/(s.pos[0]-Spheres.boundpos[0]));
-
-			double cos = Math.cos(2*theta);
-			double sin = Math.sin(2*theta);
-			double tempv0 = cos*(s.vel[0]-Spheres.boundvel[0]) + sin*(s.vel[1]-Spheres.boundvel[1]);
-			s.vel[1] = Spheres.boundvel[1]-sin*(s.vel[0]-Spheres.boundvel[0]) + cos*(s.vel[1]-Spheres.boundvel[1]);
-			s.vel[0] = Spheres.boundvel[0]-tempv0;	
-			
-			
-			
-			
-			
-		}else if(isSwirl()){
-			double v0 = Spheres.boundvel[0];
-			Spheres.boundvel[0] = Math.cos(SWIRL_ANGLE)*Spheres.boundvel[0]-Math.sin(SWIRL_ANGLE)*Spheres.boundvel[1];
-			Spheres.boundvel[1] = Math.sin(SWIRL_ANGLE)*v0+Math.cos(SWIRL_ANGLE)*Spheres.boundvel[1];
-			
-		}
-		else{
-			//we need to change the velocities according to the formula from wiki
-			Sphere s1 = spheres[0];
-			Sphere s2 = spheres[1];
-			Vector v1 = new Vector(s1.vel);
-			Vector v2 = new Vector(s2.vel);
-			Vector x1 = new Vector(s1.pos);
-			Vector x2 = new Vector(s2.pos);
-			double dot1 = v1.minus(v2).dot(x1.minus(x2));
-			
-			dot1/=Math.pow(x1.minus(x2).norm(),2);
-			
-			s1.vel = v1.minus(x1.minus(x2).times(dot1)).toArray();	
-			
-			
-			double dot2 = v2.minus(v1).dot(x2.minus(x1));
-			dot2/=Math.pow(x2.minus(x1).norm(),2);
-			s2.vel = v2.minus(x2.minus(x1).times(dot2)).toArray();
-			
-		}
-	}
-	
+			s2.vel = newPerp2.add(newPar2).toArray();	
+		}		
+	}	
 	public String toString(){
 		String toRet = "";
 		if(swirl){

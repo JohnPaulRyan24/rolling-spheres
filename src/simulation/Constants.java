@@ -6,8 +6,8 @@ public class Constants {
 	static int NUM_OF_SPHERES;
 	static double MU;
 	static double WMU;
-	final static int BOUNDRAD = 5;
-	final static int ITERATIONS =10000;
+	final static double BOUNDRAD = 5;
+	final static int ITERATIONS =100000;
 	final static int BOUND_TURN = 30;//degrees
 	static double swirl_interval;
 	static double bound_vel;
