@@ -3,22 +3,20 @@ import numpy as np
 import math
 import sys
 
-MU =float(sys.argv[2])
 
-scene2 = display(title = "Animation - Mu="+str(MU),x=900)
-MU=0
-verb = int(sys.argv[3])
+scene2 = display(title = "Animation",x=900)
+MU = 0
+verb = int(sys.argv[1])
 if(verb==1):
     verbose = True
 else:
     verbose = False
-path = sys.argv[1]
 DELTA = 0.005
 positions = []
 velocities = []
 
 boundpos = [0.0,0.0]
-boundvel = [float(sys.argv[4]),0.0]
+boundvel = [float(sys.argv[2]),0.0]
 SPEED = 2000
 BOUNDRAD = 5
 
@@ -40,33 +38,10 @@ def dist(arr,arr2):
     a[0] = arr[0] - arr2[0]
     a[1] = arr[1] - arr2[1]
     return anorm(a)
-    
 
-def update_velocities():
-    for i in range(len(velocities)):
-        norm = anorm(velocities[i])
-        if(norm==0):
-            continue
-        temp = velocities[i][0]
-        velocities[i][0]-=MU*(velocities[i][0]/norm)
-        if(temp*velocities[i][0]<=0):
-            velocities[i][0]=temp
-            if(temp>0):
-                velocities[i][0] = 0.01
-            else:
-                velocities[i][0] = -0.01
-        temp = velocities[i][1]
-        velocities[i][1]-=MU*(velocities[i][1]/norm)
-        if(temp*velocities[i][1]<=0):
-            velocities[i][1]=temp
-            if(temp>0):
-                velocities[i][1] = 0.01
-            else:
-                velocities[i][1] = -0.01
-
-inp = open("examples/"+path+"/input.txt","r")
+inp = open("examples/14/input.txt","r")
 inplines = inp.readlines()
-num_of_spheres = int(sys.argv[5])
+num_of_spheres = int(sys.argv[3])
 for i in range(1,num_of_spheres+1):
     line = inplines[i].split(" ")
     positions.append([float(line[1]),float(line[2])])
@@ -86,7 +61,7 @@ for p in positions:
     count = count%3
     
             
-out = open("examples/"+path+"/output.txt","r")
+out = open("examples/14/output.txt","r")
 lines = out.readlines()
 t = 0
 prev_nonce=-1
@@ -144,7 +119,7 @@ for line in lines:
         if(not bound):
             positions[ID2] = [posx2, posy2]
             velocities[ID2] = [velx2, vely2]
-            update_velocities()
+        # update_velocities()
         prev_nonce = nonce
         #print str(dist(positions[1],positions[0])), str(velocities[1]),str(velocities[0])
 ##        print nonce
@@ -154,3 +129,28 @@ for line in lines:
         interval+=5
 
 
+#
+#
+#
+#def update_velocities():
+#    for i in range(len(velocities)):
+#        norm = anorm(velocities[i])
+#        if(norm==0):
+#            continue
+#        temp = velocities[i][0]
+#        velocities[i][0]-=MU*(velocities[i][0]/norm)
+#        if(temp*velocities[i][0]<=0):
+#            velocities[i][0]=temp
+#            if(temp>0):
+#                velocities[i][0] = 0.01
+#            else:
+#                velocities[i][0] = -0.01
+#        temp = velocities[i][1]
+#        velocities[i][1]-=MU*(velocities[i][1]/norm)
+#        if(temp*velocities[i][1]<=0):
+#            velocities[i][1]=temp
+#            if(temp>0):
+#                velocities[i][1] = 0.01
+#            else:
+#                velocities[i][1] = -0.01
+#

@@ -106,37 +106,66 @@ public class Collision {
 			Vector newPerp1 = unit.times(s1vel.dot(unit));
 			Vector par1 = s1vel.minus(newPerp1);
 			double par1norm = par1.norm();
-			Vector normPar1;
+			Vector unitPar1;
 			if(par1norm!=0){
-				normPar1 = par1.times(1/par1norm);
+				unitPar1 = par1.times(1/par1norm);
 			}else{
-				normPar1 = par1;
+				unitPar1 = par1;
 			}
 			Vector delv1perp = newPerp1.minus(oldPerp1);
-			Vector newPar1 = normPar1.times(par1.norm()-Constants.MU*delv1perp.norm());
-			if(newPar1.dot(par1)<0){
-				double[] temp = {0,0};
-				newPar1 = new Vector(temp);
-			}
-			s1.vel = newPerp1.add(newPar1).toArray();
-				
+			double newNorm1 = par1.norm()-Constants.MU*delv1perp.norm();
+			Vector newPar1 = unitPar1.times(newNorm1);
+			
+			
 			unit = unit.times(-1);
 			Vector newPerp2 = unit.times(s2vel.dot(unit));
 			Vector par2 = s2vel.minus(newPerp2);
+			
+			
+			if(newPar1.minus(par2).dot(par1.minus(par2))<0){
+				newPar1 = new Vector(par2.toArray());
+			}
+			
+//			if(newNorm1<0){//newPar1.dot(par1)<0){
+//				double[] temp = {0,0};
+//				newPar1 = new Vector(temp);
+//			}else{
+//				newPar1 = unitPar1.times(newNorm1);
+//			}
+//			
+			
+			
+			
+			s1.vel = newPerp1.add(newPar1).toArray();
+				
+
 			double par2norm = par2.norm();
-			Vector normPar2;
+			Vector unitPar2;
 			if(par2norm!=0){
-				normPar2 = par2.times(1/par2norm);
+				unitPar2 = par2.times(1/par2norm);
 			}else{
-				normPar2 = par2;
+				unitPar2 = par2;
 			}
 			Vector delv2perp = newPerp2.minus(oldPerp2);
-			Vector newPar2 = normPar2.times(par2.norm()-Constants.MU*delv2perp.norm());
+			double newNorm2 = par2.norm()-Constants.MU*delv2perp.norm();
+			Vector newPar2 = unitPar2.times(newNorm2);;
 			
-			if(newPar2.dot(par2)<0){
-				double[] temp = {0,0};
-				newPar2 = new Vector(temp);
+			
+			if(newPar2.minus(par1).dot(par2.minus(par1))<0){
+				newPar2 = new Vector(par1.toArray());
 			}
+			
+			
+//			if(newNorm2<0){//newPar2.dot(par2)<0){
+//				double[] temp = {0,0};
+//				newPar2 = new Vector(temp);
+//			}else{
+//				newPar2 = unitPar2.times(newNorm2);
+//			}
+//			
+			
+			
+			
 			s2.vel = newPerp2.add(newPar2).toArray();	
 		}		
 	}	

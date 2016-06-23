@@ -6,46 +6,152 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Simulation {
-	
+	public static void muTest() throws FileNotFoundException{
+		PrintWriter m = new PrintWriter(new File("MU_"+Constants.WMU+"_"+Constants.bound_vel+"_"+Constants.NUM_OF_SPHERES+".txt"));
+		for(int d = 0; d<=30; d+= 1){
+			Constants.MU = d/100.0;
+		
+			initializeSpheres();
+			ArrayList<Collision> current;
+			double totalAvg = 0;		
+			for(int i=0;i<Constants.ITERATIONS; i++){		
+				totalAvg 	+= Spheres.getMomenta();
+				current = Spheres.nextCollision();			
+				Spheres.updatePositions(current.get(0).time);
+				for(Collision c : current){
+					c.process();			
+				}
+			}	
+			totalAvg/=Constants.ITERATIONS;
+			m.println(Constants.MU+" "+totalAvg);
+		}
+		m.close();
+	}
+	public static void wmuTest() throws FileNotFoundException{
+		PrintWriter m = new PrintWriter(new File("WMU_"+Constants.MU+"_"+Constants.bound_vel+"_"+Constants.NUM_OF_SPHERES+".txt"));
+		for(int d = 0; d<=40; d++){
+			Constants.WMU = d/10.0;
+		
+			initializeSpheres();
+			ArrayList<Collision> current;
+			double totalAvg = 0;		
+			for(int i=0;i<Constants.ITERATIONS; i++){		
+				totalAvg 	+= Spheres.getMomenta();
+				current = Spheres.nextCollision();			
+				Spheres.updatePositions(current.get(0).time);
+				for(Collision c : current){
+					c.process();			
+				}
+			}	
+			totalAvg/=Constants.ITERATIONS;
+			m.println(Constants.WMU+" "+totalAvg);
+		}
+		m.close();
+	}
+	public static void boundvelTest() throws FileNotFoundException{
+		PrintWriter m = new PrintWriter(new File("AMP_"+Constants.MU+"_"+Constants.WMU+"_"+Constants.NUM_OF_SPHERES+".txt"));
+		for(double d = 5; d<=90; d+= 5){
+			Constants.bound_vel = d/10.0;
+		
+			initializeSpheres();
+			ArrayList<Collision> current;
+			double totalAvg = 0;		
+			for(int i=0;i<Constants.ITERATIONS; i++){		
+				totalAvg 	+= Spheres.getMomenta();
+				current = Spheres.nextCollision();			
+				Spheres.updatePositions(current.get(0).time);
+				for(Collision c : current){
+					c.process();			
+				}
+			}	
+			totalAvg/=Constants.ITERATIONS;
+			m.println(Constants.bound_vel+" "+totalAvg);
+		}
+		m.close();
+	}
+	public static void spherenumTest() throws FileNotFoundException{
+		PrintWriter m = new PrintWriter(new File("NUM_"+Constants.MU+"_"+Constants.WMU+"_"+Constants.bound_vel+".txt"));
+		for(int d = 1; d<=13; d++){
+			Constants.NUM_OF_SPHERES = d;
+		
+			initializeSpheres();
+			ArrayList<Collision> current;
+			double totalAvg = 0;		
+			for(int i=0;i<Constants.ITERATIONS; i++){		
+				totalAvg 	+= Spheres.getMomenta();
+				current = Spheres.nextCollision();			
+				Spheres.updatePositions(current.get(0).time);
+				for(Collision c : current){
+					c.process();			
+				}
+			}	
+			totalAvg/=Constants.ITERATIONS;
+			m.println(Constants.NUM_OF_SPHERES+" "+totalAvg);
+		}
+		m.close();
+	}
+	public static void testing(String[] args) throws FileNotFoundException{
+		setConstants(args);
+		if(Constants.MU==-1){
+			muTest();
+			return;
+		}else if(Constants.WMU==-1){
+			wmuTest();
+			return;
+		}else if(Constants.bound_vel==-1){
+			boundvelTest();
+			return;
+		}else{
+			spherenumTest();
+			return;
+		}
+		
+	}
 	
 	public static void main(String[] args) throws FileNotFoundException{
 		
+		
+		
+		int testing = Integer.parseInt(args[4]);
+		
+		
+		
+		if(testing==1){
+			testing(args);
+			return;
+		}
 		setConstants(args);
 		
-		String path = "examples/"+args[0];
-		initializeSpheres(path);
+		initializeSpheres();
 		
 		ArrayList<Collision> current;
-		PrintWriter p = new PrintWriter(new File(path+"/output.txt"));
-		PrintWriter e = new PrintWriter(new File(path+"/energies.txt"));
-		PrintWriter m = new PrintWriter(new File(path+"/cmomenta.txt"));
+		PrintWriter p = new PrintWriter(new File("examples/14/output.txt"));
+		PrintWriter m = new PrintWriter(new File("examples/14/momenta.txt"));
 
+	
 		long start = System.currentTimeMillis();
 		int nonce = 0;
-		
 		double temp;
-		double avg = 0, totalAvg = 0, totalTime = 0, currentMomentum = 0;
 		ArrayList<Double> memory = new ArrayList<Double>();
+		double totalAvg = 0, currentMomentum = 0, avg = 0, totalTime = 0;
 		for(int i=0;i<Constants.ITERATIONS; i++){
 			currentMomentum = Spheres.getMomenta();
 			avg			+= currentMomentum;
 			totalAvg 	+= currentMomentum;
+		
 			
 			memory.add(currentMomentum);
 			if(memory.size()==1001){
 				temp = memory.remove(0);
 				avg -= temp;
-				m.printf("%f %f\n", totalTime, avg/1000.0);
+				m.printf("%f %f\n", totalTime, avg/1000.0); //This is the print for the plot of momentum with time
 			}
-			
-			e.printf("%f %f\n", totalTime, Spheres.getEnergy());
-			
 			current = Spheres.nextCollision();			
 			Spheres.updatePositions(current.get(0).time);
 			totalTime+=current.get(0).time;
 			for(Collision c : current){
 				c.process();
-				p.println(c.toString()+" "+nonce);	
+				p.println(c.toString()+" "+nonce);	 //This is the print for the animation
 			}
 //			if(!current.get(0).isBoundary()&&!current.get(0).isSwirl()){
 //				Spheres.updateVelocities();
@@ -53,38 +159,30 @@ public class Simulation {
 			nonce++;
 		}
 		
-		totalAvg/=Constants.ITERATIONS;
-		
-		
-		File tempfile = new File("cmomenta/"+args[5]+"/temp.txt");
-		PrintWriter t = new PrintWriter(tempfile);
-		t.write("Momentum: "+totalAvg+"\n");
-		
-		System.out.println("\n\n\nMomentum: "+totalAvg);
 		
 		
 		long end = System.currentTimeMillis();
 		System.out.printf("Simulation took %d milliseconds.\n\n\n",(end-start));
-		
-		t.close();
-		p.close();
-		e.close();
+		totalAvg/=Constants.ITERATIONS;
+		System.out.println("Momentum: "+totalAvg);
+
 		m.close();
+		p.close();
+
 	}
 	
 	
 	
 	
 	public static void setConstants(String[] args){
-		Constants.MU = Double.parseDouble(args[1]);
-		Constants.WMU = Double.parseDouble(args[2]);
-		Constants.bound_vel = Double.parseDouble(args[3]);
-		Constants.swirl_interval = Double.parseDouble(args[4]);
-		Constants.NUM_OF_SPHERES = Integer.parseInt(args[6]);
+		Constants.MU = Double.parseDouble(args[0]);
+		Constants.WMU = Double.parseDouble(args[1]);
+		Constants.bound_vel = Double.parseDouble(args[2]);
+		Constants.NUM_OF_SPHERES = Integer.parseInt(args[3]);
 	}
 
-	public static void initializeSpheres(String path) throws FileNotFoundException{
-		Scanner input = new Scanner(new File(path+"/input.txt"));
+	public static void initializeSpheres() throws FileNotFoundException{
+		Scanner input = new Scanner(new File("examples/14/input.txt"));
 
 		input.nextLine();
 		Spheres.init();
