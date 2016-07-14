@@ -209,8 +209,44 @@ public class Spheres {
 			toRet += Math.pow(s.vel[0], 2)+Math.pow(s.vel[1], 2);	
 		}return toRet;
 	}
+	public static double[] getFrequencies(){
+		double[] toRet = new double[Spheres.length];
+		double temp, norm;
+		double[] rad = new double[2];
+		Sphere a;
+		
+		for(int i=0;i<Spheres.length;i++){
+			a = Spheres[i];
+			rad[0] = a.pos[0] - boundpos[0];
+			rad[1] = a.pos[1] - boundpos[1];
+			norm = norm(rad);
+			if(norm<0.1){
+				continue;
+			}
+			temp = rad[0]*a.vel[1]-rad[1]*a.vel[0];
+			temp/=Math.pow(norm, 2);
+			toRet[i] = temp;
+			
+		}return toRet;
+	}
 	
 	
+	public static double getVariance(){
+		double toRet=0;
+		double[] freqs = getFrequencies();
+		double a,b;
+		for(int i=0; i<freqs.length;i++){
+			a = freqs[i];
+			for(int j=i+1;j<freqs.length;j++){
+				b = freqs[j];
+				toRet+=Math.pow(a-b,2);
+			}
+		}
+		toRet/=Math.pow(Constants.NUM_OF_SPHERES,2);
+		return toRet;
+		
+		
+	}
 	public static double getMomenta(){
 		double[] center = {0,0};
 		for(Sphere s:Spheres){
@@ -222,24 +258,23 @@ public class Spheres {
 		
 		double total = 0;
 		double[] radius = new double[2];
-		Vector rad,vel;
+	//	Vector rad,vel;
+		
+		
 		for(Sphere s: Spheres){
 			radius[0] = s.pos[0]-center[0];
 			radius[1] = s.pos[1]-center[1];
-			rad = new Vector(radius);
-			if(rad.norm()!=0){ //this is so unlikely
-				rad = rad.times(1.0/rad.norm());
-			}
-			radius = rad.toArray();
-			double temp = - radius[1];
-			radius[1] = radius[0];
-			radius[0] = temp;
-			rad = new Vector(radius);
-			
-			vel = new Vector(s.vel);
-			total += vel.dot(rad);
-			
-			
+//			rad = new Vector(radius);
+//			if(rad.norm()!=0){ //this is so unlikely
+//				rad = rad.times(1.0/rad.norm());
+//			}
+//			radius = rad.toArray();
+//			double temp = - radius[1];
+//			radius[1] = radius[0];
+//			radius[0] = temp;
+//			rad = new Vector(radius);			
+//			vel = new Vector(s.vel);
+			total += (radius[0]*s.vel[1]-radius[1]*s.vel[0]);
 		}
 		return total;
 	}

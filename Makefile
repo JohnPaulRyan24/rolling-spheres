@@ -1,9 +1,12 @@
-mu 		= 0.2
+mu 		= 3
 wmu		= 0
-boundvel 	= 2
-N		= 13
+amp 		= 0.5
+N		= 55
 verbose 	= 0
-
+pixels		= 0
+vector		= 1
+mframe		= 0
+pink		= 1
 
 compile:
 	test -d bin || mkdir bin
@@ -11,9 +14,13 @@ compile:
 
 
 run:
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${boundvel} ${N} 0
-	python plot.py &
-	python animation.py ${verbose} ${boundvel} ${N}
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} 0
+	# Sphere/Sphere Friction: (mu): ${mu}
+	# Wall/Sphere Friction: (wmu): ${wmu}
+	# Amplitude: (amp): ${amp}
+	# Number of Discs (N): ${N}
+	# Pixels-${pixels} Vector-${vector} M-Frame-${mframe} 
+	python animation.py ${verbose} ${amp} ${N} ${pixels} ${vector} ${mframe} ${pink}
 
 test:
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${boundvel} ${N} 1
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} 1

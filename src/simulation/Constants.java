@@ -7,10 +7,10 @@ public class Constants {
 	static int NUM_OF_SPHERES;
 	static double MU;
 	static double WMU;
-	final static double BOUNDRAD = 5;
+	final static double BOUNDRAD = 10;
 	final static int ITERATIONS =10000;
 	final static int BOUND_TURN = 30;//degrees
-	final static double swirl_interval =1;
+	final static double swirl_interval =1000;
 	static double bound_vel;
 	
 }

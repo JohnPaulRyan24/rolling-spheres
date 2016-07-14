@@ -8,8 +8,8 @@ import java.util.Scanner;
 public class Simulation {
 	public static void muTest() throws FileNotFoundException{
 		PrintWriter m = new PrintWriter(new File("MU_"+Constants.WMU+"_"+Constants.bound_vel+"_"+Constants.NUM_OF_SPHERES+".txt"));
-		for(int d = 0; d<=30; d+= 1){
-			Constants.MU = d/100.0;
+		for(int d = 0; d<=100; d+= 1){
+			Constants.MU = d/10.0;
 		
 			initializeSpheres();
 			ArrayList<Collision> current;
@@ -29,7 +29,7 @@ public class Simulation {
 	}
 	public static void wmuTest() throws FileNotFoundException{
 		PrintWriter m = new PrintWriter(new File("WMU_"+Constants.MU+"_"+Constants.bound_vel+"_"+Constants.NUM_OF_SPHERES+".txt"));
-		for(int d = 0; d<=40; d++){
+		for(int d = 0; d<=80; d++){
 			Constants.WMU = d/10.0;
 		
 			initializeSpheres();
@@ -71,7 +71,7 @@ public class Simulation {
 	}
 	public static void spherenumTest() throws FileNotFoundException{
 		PrintWriter m = new PrintWriter(new File("NUM_"+Constants.MU+"_"+Constants.WMU+"_"+Constants.bound_vel+".txt"));
-		for(int d = 1; d<=13; d++){
+		for(int d = 20; d<=55; d+=5){
 			Constants.NUM_OF_SPHERES = d;
 		
 			initializeSpheres();
@@ -109,13 +109,7 @@ public class Simulation {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException{
-		
-		
-		
 		int testing = Integer.parseInt(args[4]);
-		
-		
-		
 		if(testing==1){
 			testing(args);
 			return;
@@ -125,20 +119,26 @@ public class Simulation {
 		initializeSpheres();
 		
 		ArrayList<Collision> current;
-		PrintWriter p = new PrintWriter(new File("examples/14/output.txt"));
-		PrintWriter m = new PrintWriter(new File("examples/14/momenta.txt"));
-
-	
+		PrintWriter p = new PrintWriter(new File("input/output.txt"));
+		PrintWriter m = new PrintWriter(new File("input/momenta.txt"));
+		PrintWriter hist_s = new PrintWriter(new File("hist_data_s.txt"));
+		PrintWriter hist_w = new PrintWriter(new File("hist_data_w.txt"));
+		
 		long start = System.currentTimeMillis();
 		int nonce = 0;
 		double temp;
 		ArrayList<Double> memory = new ArrayList<Double>();
 		double totalAvg = 0, currentMomentum = 0, avg = 0, totalTime = 0;
+		currentMomentum = Spheres.getMomenta();
+		double pastMomentum = currentMomentum;
+		System.out.println("Initial Angular Momentum: "+currentMomentum+"<br>");
+		
+		double totalVar=0;
+		
 		for(int i=0;i<Constants.ITERATIONS; i++){
-			currentMomentum = Spheres.getMomenta();
 			avg			+= currentMomentum;
 			totalAvg 	+= currentMomentum;
-		
+			totalVar 	+= Spheres.getVariance();
 			
 			memory.add(currentMomentum);
 			if(memory.size()==1001){
@@ -146,29 +146,41 @@ public class Simulation {
 				avg -= temp;
 				m.printf("%f %f\n", totalTime, avg/1000.0); //This is the print for the plot of momentum with time
 			}
-			current = Spheres.nextCollision();			
+			current = Spheres.nextCollision();	
 			Spheres.updatePositions(current.get(0).time);
+
+			//System.out.println(Spheres.getMomenta()-temp1);
 			totalTime+=current.get(0).time;
 			for(Collision c : current){
 				c.process();
 				p.println(c.toString()+" "+nonce);	 //This is the print for the animation
 			}
-//			if(!current.get(0).isBoundary()&&!current.get(0).isSwirl()){
-//				Spheres.updateVelocities();
-//			}
+			currentMomentum = Spheres.getMomenta();
 			nonce++;
+			if(!current.get(0).isSwirl()&&!current.get(0).isBoundary()){
+				hist_s.println(currentMomentum-pastMomentum);
+			}
+			else if(current.get(0).isBoundary()){
+				hist_w.println(currentMomentum-pastMomentum);
+			}
+	
+			pastMomentum = currentMomentum;
+		
+			
 		}
+		System.out.println("Final Angular Momentum: "+pastMomentum+"<br>");
 		
-		
-		
-		long end = System.currentTimeMillis();
-		System.out.printf("Simulation took %d milliseconds.\n\n\n",(end-start));
 		totalAvg/=Constants.ITERATIONS;
-		System.out.println("Momentum: "+totalAvg);
-
+		totalVar/=Constants.ITERATIONS;
+		System.out.println("Average Angular Momentum: "+totalAvg+"<br>");
+		System.out.println("Average variance of angular frequency: "+totalVar);
+		long end = System.currentTimeMillis();
+		System.out.printf("Simulation took %d milliseconds.\n",(end-start));
+		
 		m.close();
 		p.close();
-
+		hist_s.close();
+		hist_w.close();
 	}
 	
 	
@@ -177,12 +189,12 @@ public class Simulation {
 	public static void setConstants(String[] args){
 		Constants.MU = Double.parseDouble(args[0]);
 		Constants.WMU = Double.parseDouble(args[1]);
-		Constants.bound_vel = Double.parseDouble(args[2]);
+		Constants.bound_vel = Double.parseDouble(args[2])/1000.0;
 		Constants.NUM_OF_SPHERES = Integer.parseInt(args[3]);
 	}
 
 	public static void initializeSpheres() throws FileNotFoundException{
-		Scanner input = new Scanner(new File("examples/14/input.txt"));
+		Scanner input = new Scanner(new File("input/input.txt"));
 
 		input.nextLine();
 		Spheres.init();
@@ -199,6 +211,8 @@ public class Simulation {
 				pos[j-1] = Double.parseDouble(toParse[j]);
 			}
 			toAdd.pos = pos;
+			toAdd.theta = 0;
+			toAdd.theta_vel = 0;
 			for(int j=Constants.DIMENSIONS+2;j<2*Constants.DIMENSIONS+2;j++){
 				vel[j-Constants.DIMENSIONS-2] = Double.parseDouble(toParse[j]);
 			}
