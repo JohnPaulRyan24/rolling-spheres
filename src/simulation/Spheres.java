@@ -48,7 +48,7 @@ public class Spheres {
 		}
 		//now we know it's real
 		double toRet = (0.0-B-Math.sqrt(disc))/(2*A);
-		if(toRet>1e-13){
+		if(toRet>2e-13){
 			return new Collision(a,b,toRet);
 		}
 		return new Collision(a,b,-1);
@@ -71,7 +71,7 @@ public class Spheres {
 			return new Collision(a,-1);
 		}
 		double toRet = (0.0-B+Math.sqrt(disc))/(2*A);
-		if(toRet>1e-13){
+		if(toRet>2e-13){
 			return new Collision(a,toRet);
 		}
 		return new Collision(a,-1);
@@ -85,6 +85,7 @@ public class Spheres {
 			sphere = Spheres[i];
 			sphere.pos[0] = sphere.pos[0]+time*sphere.vel[0];
 			sphere.pos[1] = sphere.pos[1]+time*sphere.vel[1];
+			sphere.theta += time*sphere.theta_vel;
 		}
 		boundpos[0]+=time*boundvel[0];
 		boundpos[1]+=time*boundvel[1];
@@ -115,12 +116,12 @@ public class Spheres {
 				if(col.time!=-1){
 					if(toRet.size()==0){
 						toRet.add(col);
-					}else if(toRet.get(0).time-col.time>=1e-13){
+					}else if(toRet.get(0).time-col.time>=2e-13){
 						//*SEE NOTE IN NEXT ELSEIF BLOCK
 
 						for(int k=0;k<toRet.size();){ //THE REASON FOR THIS FOR LOOP IS THAT WE USE get(0) AS THE BASE
 							Collision c = toRet.get(k);
-							if(Math.abs(c.time-col.time)>1e-13){
+							if(Math.abs(c.time-col.time)>2e-13){
 								//THIS FOR LOOP HAS CLEARED toRet FOR ALL CASES OTHER THAN SAME TIME COLLISIONS
 								toRet.remove(k);
 							}else{
@@ -130,7 +131,7 @@ public class Spheres {
 						}
 						toRet.add(col);
 					}
-					else if(Math.abs(toRet.get(0).time-col.time)<=1e-13){  
+					else if(Math.abs(toRet.get(0).time-col.time)<=2e-13){  
 						//*IMPORTANT NOTE - THIS HAS ONLY BEEN FOUND TO HAPPEN FOR EXACT SAME TIME COLLISIONS
 						//System.out.println("SAME TIME");
 						toRet.add(col);
@@ -147,14 +148,16 @@ public class Spheres {
 		Collision col;
 		for(Sphere a: Spheres){
 			col = nextWallCollision(a);
+			
 			if(col.time!=-1){
 				if(toRet.size()==0){
 					toRet.add(col);
-				}else if(toRet.get(0).time-col.time>=1e-13){
+					
+				}else if(toRet.get(0).time-col.time>=2e-13){
 					//See *comments for spheres for loop above
 					for(int j=0;j<toRet.size();){
 						Collision c = toRet.get(j);
-						if(Math.abs(c.time-col.time)>1e-13){
+						if(Math.abs(c.time-col.time)>2e-13){
 							toRet.remove(j);
 						}else{
 							j++;
@@ -163,7 +166,7 @@ public class Spheres {
 
 					toRet.add(col);
 				}
-				else if(Math.abs(toRet.get(0).time-col.time)<=1e-13){ 
+				else if(Math.abs(toRet.get(0).time-col.time)<=2e-13){ 
 					toRet.add(col);
 				}
 			}
@@ -177,10 +180,10 @@ public class Spheres {
 			toRet.add(new Collision(swirlHit));
 			swirlTime=0;
 		}
-		else if(toRet.get(0).time-swirlHit>=1e-13){
+		else if(toRet.get(0).time-swirlHit>=2e-13){
 			for(int j=0;j<toRet.size();){
 				Collision c = toRet.get(j);
-				if(Math.abs(c.time-swirlHit)>1e-13){
+				if(Math.abs(c.time-swirlHit)>2e-13){
 					toRet.remove(j);
 				}else{
 
@@ -190,16 +193,16 @@ public class Spheres {
 			toRet.add(new Collision(swirlHit));
 			swirlTime=0;
 		}
-		else if(Math.abs(toRet.get(0).time-swirlHit)<=1e-13){ 
+		else if(Math.abs(toRet.get(0).time-swirlHit)<=2e-13){ 
 			//SEE * comments above
+			
 			toRet.add(new Collision(swirlHit));
 			swirlTime=0;
 		}
-
 		else{
+			
 			swirlTime+=toRet.get(0).time;
 		}
-		
 	}
 	
 	
@@ -214,6 +217,11 @@ public class Spheres {
 		double temp, norm;
 		double[] rad = new double[2];
 		Sphere a;
+		double sum =0;
+		double r2;
+		
+		
+		
 		
 		for(int i=0;i<Spheres.length;i++){
 			a = Spheres[i];
@@ -223,11 +231,22 @@ public class Spheres {
 			if(norm<0.1){
 				continue;
 			}
+			r2 = norm*norm;
+			sum+=r2;
 			temp = rad[0]*a.vel[1]-rad[1]*a.vel[0];
 			temp/=Math.pow(norm, 2);
-			toRet[i] = temp;
-			
-		}return toRet;
+			if(!Constants.WEIGHT){
+				r2=1;
+			}
+			toRet[i] = temp*r2;
+		}
+		
+		if(Constants.WEIGHT){
+			for(int i=0;i<toRet.length;i++){
+				toRet[i]/=sum;
+			}
+		}
+		return toRet;
 	}
 	
 	
@@ -274,6 +293,7 @@ public class Spheres {
 //			radius[0] = temp;
 //			rad = new Vector(radius);			
 //			vel = new Vector(s.vel);
+			
 			total += (radius[0]*s.vel[1]-radius[1]*s.vel[0]);
 		}
 		return total;

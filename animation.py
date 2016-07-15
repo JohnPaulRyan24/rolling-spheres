@@ -30,15 +30,16 @@ def get_input_args():
     return pixels, vector, mframe, display_pink_ball, verbose, num_of_discs
 
 if __name__ == '__main__':           
-    speed    = 4000
+    speed    =4000
     delta_t  = 2
     boxres   = 10
     boundrad = 10
+    rotations = 0
     pixels, vector, mframe, display_pink_ball, verbose, num_of_discs = get_input_args()
     if(mframe):
         speed  = speed/4
     input_file = "input/input.txt"
-    sim_config = config.Sim_Config(num_of_discs, input_file, delta_t)
+    sim_config = config.Sim_Config(num_of_discs, input_file, delta_t,boundrad)
 
     #Set up displays   
     scene2 = display(title = "Animation",x=900)
@@ -53,9 +54,9 @@ if __name__ == '__main__':
     discs = []
     for p in sim_config.positions:
         if(count==0):
-            discs.append(sphere(pos=(p[0],p[1],0), radius=1,  material=tex))#, make_trail=True))
+            discs.append(sphere(pos=(p[0],p[1],0), radius=1, material=tex))#, make_trail=True))
         elif(count==1):
-            discs.append(sphere(pos=(p[0],p[1],0), radius=1,  material=tex))
+            discs.append(sphere(pos=(p[0],p[1],0), radius=1, material=tex))
         elif(count==2):
             discs.append(sphere(pos=(p[0],p[1],0), radius=1,  material=tex))
         count+=1
@@ -65,7 +66,8 @@ if __name__ == '__main__':
     totalTime     = 0
     pink_ball_ang = 0
     pink_ball_pos = (0,10,0)
-    pink_ball = sphere(pos=pink_ball_pos, radius=1, color=color.magenta, material=None)
+    if(display_pink_ball):
+        pink_ball = sphere(pos=pink_ball_pos, radius=1, color=color.magenta, material=None)
     boundary = ring(pos = (0,0,0), axis=(0,0,-1), radius = boundrad, thickness=0.1, material=None)
     
     #Open file with simulation data
@@ -85,7 +87,7 @@ if __name__ == '__main__':
         if(display_pink_ball):
             temp1 = np.cos(pink_ball_ang)
             temp2 = np.sin(pink_ball_ang)    
-            pink_ball_pos = (sim_config.boundpos[0]+10*temp1,sim_config.boundpos[1]+10*temp2,0)
+            pink_ball_pos = (sim_config.boundpos[0]+boundrad*temp1,sim_config.boundpos[1]+boundrad*temp2,0)
         if display_pink_ball and not mframe:
             pink_ball.pos = pink_ball_pos
         #Process collision data
@@ -98,6 +100,7 @@ if __name__ == '__main__':
                 while(t<time):
                     sim_config.update_positions() #important
                     sim_config.update_animation(mframe, pink_ball_ang, discs, boundary)
+                    pink_ball_ang+=(delta_t*np.pi)/6000.0
                     t+=delta_t
                     rate(speed)
                 if(pixels):
@@ -108,12 +111,13 @@ if __name__ == '__main__':
             prev_nonce=nonce
             t=0
         else:
-            posx, posy, velx, vely = float(l[4]), float(l[6]), float(l[8]), float(l[10])
+            posx, posy, velx, vely, theta, theta_vel =\
+                  float(l[4]), float(l[6]), float(l[8]), float(l[10]), float(l[12]), float(l[14])
             if(len(l)>20):
                 bound = False
-                ID2, posx2, posy2, velx2, vely2, time, nonce = \
+                ID2, posx2, posy2, velx2, vely2, theta2, theta_vel2, time, nonce = \
                      int(l[17]), float(l[19]), float(l[21]), float(l[23]),\
-                     float(l[25]), float(l[31]), float(l[32]) 
+                     float(l[25]), float(l[27]), float(l[29]), float(l[31]), float(l[32]) 
             else:
                 bound = True
                 time = float(l[16])
@@ -127,6 +131,7 @@ if __name__ == '__main__':
                 while(t<time):
                     sim_config.update_positions()
                     sim_config.update_animation(mframe, pink_ball_ang, discs, boundary)
+                    pink_ball_ang+=(delta_t*np.pi)/6000.0
                     t+=delta_t
                     rate(speed)
                 if(pixels):
@@ -134,11 +139,15 @@ if __name__ == '__main__':
                     update_box_colors_density()
                     scene2.select()
             t=0
-            sim_config.positions[ID] = [ posx, posy]
-            sim_config.velocities[ID] = [ velx, vely]
+            sim_config.positions[ID] = [posx, posy]
+            sim_config.velocities[ID] = [velx, vely]
+            sim_config.thetas[ID] = theta
+            sim_config.theta_vels[ID] = theta_vel
             if(not bound):
                 sim_config.positions[ID2] = [posx2, posy2]
                 sim_config.velocities[ID2] = [velx2, vely2]
+                sim_config.thetas[ID2] = theta2
+                sim_config.theta_vels[ID2] = theta_vel2
             prev_nonce = nonce
         totalTime+=time
 

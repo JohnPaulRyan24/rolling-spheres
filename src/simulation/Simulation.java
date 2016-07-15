@@ -134,8 +134,9 @@ public class Simulation {
 		System.out.println("Initial Angular Momentum: "+currentMomentum+"<br>");
 		
 		double totalVar=0;
-		
+		double avgVel = 0;
 		for(int i=0;i<Constants.ITERATIONS; i++){
+			avgVel += Spheres.Spheres[0].theta_vel;
 			avg			+= currentMomentum;
 			totalAvg 	+= currentMomentum;
 			totalVar 	+= Spheres.getVariance();
@@ -168,6 +169,7 @@ public class Simulation {
 		
 			
 		}
+		System.out.printf("Avg: Vel Ang one ball: -- %.9f\n\n",(avgVel/Constants.ITERATIONS));
 		System.out.println("Final Angular Momentum: "+pastMomentum+"<br>");
 		
 		totalAvg/=Constants.ITERATIONS;
@@ -213,6 +215,7 @@ public class Simulation {
 			toAdd.pos = pos;
 			toAdd.theta = 0;
 			toAdd.theta_vel = 0;
+		
 			for(int j=Constants.DIMENSIONS+2;j<2*Constants.DIMENSIONS+2;j++){
 				vel[j-Constants.DIMENSIONS-2] = Double.parseDouble(toParse[j]);
 			}

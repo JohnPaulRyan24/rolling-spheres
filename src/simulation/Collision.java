@@ -36,7 +36,7 @@ public class Collision {
 		double[] ZEROS = {0.0,0.0};
 		if(isBoundary()){
 			Sphere s = spheres[0];
-
+			double ang = s.theta_vel;
 			Vector boundvel = new Vector(Spheres.boundvel);
 			double[] rad_arg = {s.pos[0]-Spheres.boundpos[0],s.pos[1]-Spheres.boundpos[1]};
 			Vector rad = new Vector(rad_arg);
@@ -49,7 +49,9 @@ public class Collision {
 
 			Vector perp = rad.times(newVel.dot(rad));
 			Vector par = newVel.minus(perp);
-			perp = perp.times(-1);
+			perp = perp.times(-1); //bonk
+			
+			
 			double damp = 2*Constants.WMU*perp.norm();
 			double parnorm = par.norm();
 			Vector normPar;
@@ -58,15 +60,21 @@ public class Collision {
 			}else{
 				normPar = par.times(1.0/parnorm);
 			}
-			Vector newPar = par.minus(normPar.times(damp));
-			if(newPar.dot(par)<0){
-				double[] temp = {0,0};
-				newPar = new Vector(temp);
+			double t = (parnorm+ang)/(2*damp);
+			if(Constants.WMU==0){
+				t=0;
 			}
+			t = Math.min(t, 1);
+			Vector newPar = par.minus(normPar.times(t*damp));
+			ang -= t*damp;
+//			if(newPar.dot(par)<0){
+//				double[] temp = {0,0};
+//				newPar = new Vector(temp);
+//			}
 			perp = perp.add(newPar);
 			perp = perp.add(boundvel);
 			s.vel = perp.toArray();
-
+			s.theta_vel = ang;
 
 
 		}else if(isSwirl()){
@@ -87,7 +95,9 @@ public class Collision {
 			Vector x1 = new Vector(s1.pos);
 			Vector x2 = new Vector(s2.pos);			
 			Vector oldPerp1, unit;
-			unit = x2.minus(x1).times(0.5); //1/2 because the norm is 2 no matter what		
+			double ang1 = s1.theta_vel;
+			double ang2 = s2.theta_vel;
+			unit = x2.minus(x1).times(0.5); //points towards x2
 
 
 			//PART 2: Calculate based on elastic collision
@@ -106,56 +116,65 @@ public class Collision {
 			if(Math.abs(par1.norm())<1e-13){
 				par1 = new Vector(ZEROS);
 			}
-			unit = unit.times(-1);
+			unit = unit.times(-1); //points towards x1
 			Vector newPerp2 = unit.times(s2vel.dot(unit));
 			Vector par2 = s2vel.minus(newPerp2);	
 			if(Math.abs(par2.norm())<1e-13){
 				par2 = new Vector(ZEROS);
 			}
-			if(par1.norm()==0&&par2.norm()==0){
-				s1.vel = newPerp1.toArray();
-				s2.vel = newPerp2.toArray();
-				return;
-			}
 
+			
 			Vector delv1perp = newPerp1.minus(oldPerp1);
 			double DELTA = delv1perp.norm();
 
 			//Part 3b - r0 is x2vel minus x1vel
-			double r0 = par1.norm() - par2.norm();
+			double r0 = par1.norm() - par2.norm()+ang1+ang2;
 			int s0 = sign(r0);
-			double t = r0/(2*Constants.MU*s0*newPerp1.minus(oldPerp1).norm());
-
+			double t = (r0)/(4*Constants.MU*s0*DELTA);
+			if(Constants.MU==0){
+				t=0;
+			}
 			Vector newPar1, newPar2;
 
 
 			//Part 3c - apply sticking rules
 			//This can be written better - try just setting t=1 at some point. 
 			t = Math.min(t, 1);
+			double impulse = Constants.MU*s0*DELTA*t;
 			Vector unitPar1, unitPar2;
-			if(par1.norm()==0){
-				unitPar2 = par2.times(1.0/par2.norm());
-				unitPar1 = new Vector(unitPar2.toArray());
+			if(par1.norm()!=0||par2.norm()!=0){
+				if(par1.norm()==0){
+					unitPar2 = par2.times(1.0/par2.norm());
+					unitPar1 = new Vector(unitPar2.toArray());
+				}
+				else if(par2.norm()==0){
+					unitPar1 = par1.times(1.0/par1.norm());
+					unitPar2 = new Vector(unitPar1.toArray());
+				}
+				else{
+					unitPar1 = par1.times(1.0/par1.norm());
+					unitPar2 = par2.times(1.0/par2.norm());
+				}
+				
+				newPar1 = unitPar1.times(par1.norm()-impulse);
+				newPar2 = unitPar2.times(par2.norm()+impulse);
+				s1.vel = newPar1.add(newPerp1).toArray();
+				s2.vel = newPar2.add(newPerp2).toArray();
+			}else{
+				s1.vel = newPerp1.toArray();
+				s2.vel = newPerp2.toArray();
 			}
-			else if(par2.norm()==0){
-				unitPar1 = par1.times(1.0/par1.norm());
-				unitPar2 = new Vector(unitPar1.toArray());
-			}
-			else{
-				unitPar1 = par1.times(1.0/par1.norm());
-				unitPar2 = par2.times(1.0/par2.norm());
-			}
-			newPar1 = unitPar1.times(par1.norm()-Constants.MU*s0*DELTA*t);
-			newPar2 = unitPar2.times(par2.norm()+Constants.MU*s0*DELTA*t);
-			s1.vel = newPar1.add(newPerp1).toArray();
-			s2.vel = newPar2.add(newPerp2).toArray();
+			ang1 -= impulse;
+			ang2 -= impulse;
+			s1.theta_vel = ang1;
+			s2.theta_vel = ang2;
+			
 
 		}	
 	}	
 	public int sign(double r0){
-		if(r0>0) return 1;
 		if(r0<0) return -1;
-		return 0;
+		return 1;
 	}
 	public String toString(){
 		String toRet = "";
