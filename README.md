@@ -25,8 +25,6 @@ to compile the Java code and
 to perform the simulation and launch the animation.
 
 #Current Status
-The boundary can be made to move along a regular n-gonal path with some velocity, and the physics of the collisions have been worked out for this. The current problem: energy is not conserved in this setting, so the velocity of the spheres can and does explode. An upcoming attempt at a workaround will include adding a damping to the spheres, and including this in the computations of collision times.
-
-Here is a video demo: https://www.youtube.com/watch?v=Qc0Vp8sCNq4
+The boundary can be made to move along a regular n-gonal path with some velocity, and the physics of the collisions have been worked out for this. Here is a recent video demo: https://www.youtube.com/watch?v=bDp2BseNIuA
 
 Thank you for checking out this project, please reach out to me with comments or questions at john.ryan@nyu.edu
