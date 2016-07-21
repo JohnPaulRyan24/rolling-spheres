@@ -3,9 +3,10 @@ import numpy as np
 
 class Sim_Config:
 
-    def __init__(self, num_of_discs, input_file, delta_t, boundrad):
+    def __init__(self, num_of_discs, input_file, delta_t, boundrad, boundvel, spinning, discs):
         self.delta_t = delta_t
         self.num_of_discs = num_of_discs
+        self.spinning = spinning
         self.positions  = []
         self.velocities = []
         self.thetas = []
@@ -20,8 +21,9 @@ class Sim_Config:
             self.theta_vels.append(0)
         count=0
         self.boundpos = [0.0,0.0]
-        self.boundvel = [float(sys.argv[2])/1000.0,0.0] #Divide by 1000 due to time scaling
+        self.boundvel = [boundvel/1000.0,0.0] #Divide by 1000 due to time scaling
         self.boundrad = boundrad
+        self.discs = discs
 
     def update_positions(self):
    
@@ -32,13 +34,14 @@ class Sim_Config:
         for i in range(2):
             self.boundpos[i]+=self.boundvel[i]*self.delta_t
             
-    def update_animation(self, mframe, pink_ball_ang, discs, boundary):
+    def update_animation(self, mframe, pink_ball_ang, boundary):
  
         if not mframe:
             boundary.pos = (self.boundpos[0],self.boundpos[1],0)
             for i in range(len(self.positions)):
-                discs[i].pos = (self.positions[i][0],self.positions[i][1],0)
-                discs[i].axis = (np.cos(self.thetas[i]),np.sin(self.thetas[i]),0)
+                self.discs[i].pos = (self.positions[i][0],self.positions[i][1],0)
+                if(self.spinning):
+                    self.discs[i].axis = (np.cos(self.thetas[i]),np.sin(self.thetas[i]),0)
                 #get position pair in ref frame of M stationary.
         else:
             for i in range(len(self.positions)):
@@ -48,8 +51,9 @@ class Sim_Config:
                 tmp = newpos[0]*np.cos(ang) - newpos[1]*np.sin(ang)
                 newpos[1] = np.sin(ang)*newpos[0]+np.cos(ang)*newpos[1]
                 newpos[0] = tmp
-                discs[i].pos = (newpos[0],newpos[1],0)
-                discs[i].axis = (np.cos(ang-self.thetas[i]+np.pi),np.sin(ang-self.thetas[i]+np.pi),0)
+                self.discs[i].pos = (newpos[0],newpos[1],0)
+                if(self.spinning):
+                    self.discs[i].axis = (np.cos(ang-self.thetas[i]+np.pi),np.sin(ang-self.thetas[i]+np.pi),0)
 
 
     def update_boundary(self, line):
@@ -58,7 +62,16 @@ class Sim_Config:
         self.boundvel[0] = float(line[6])
         self.boundvel[1] = float(line[7])
 
-    def change_arrow(self, pointer, histout, pink_ball_pos, pink_ball_ang):
+    def center_of_mass(self):
+        toRet = [0.0,0.0]
+        for pair in self.discs:
+            toRet[0]+=pair.pos[0]
+            toRet[1]+=pair.pos[1]
+        toRet[0]/=self.num_of_discs
+        toRet[1]/=self.num_of_discs
+        return (toRet[0],toRet[1],0)
+
+    def change_arrow(self, pointer, histout, pink_ball_pos, pink_ball_ang, mframe):
         centerofmass = [0.0,0.0]
         for pair in self.positions:
             centerofmass[0]+=(pair[0]-self.boundpos[0])

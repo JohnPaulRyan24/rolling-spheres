@@ -8,6 +8,7 @@ public class Spheres {
 	static Sphere[] Spheres;
 	static double[] boundpos;
 	static double[] boundvel;
+	static double M_ANG;
 	static double swirlTime;
 	static int index;
 	static double swirl_interval = Constants.swirl_interval;
@@ -23,6 +24,7 @@ public class Spheres {
 		boundvel[0]=Constants.bound_vel;
 		boundvel[1]=0;
 		swirlTime=0;
+		M_ANG = 3*Constants.PI/2;
 	}
 	
 	
@@ -79,7 +81,11 @@ public class Spheres {
 	}
 
 	
-	public static void updatePositions(double time){
+	public static void updatePositions(double time, double totalTime){
+		M_ANG = (-Constants.PI/2)+Constants.PI*totalTime/6000.0;
+		if(M_ANG>2*Constants.PI){
+			M_ANG-=2*Constants.PI;
+		}
 		Sphere sphere;
 		for(int i=0;i<Spheres.length;i++){
 			sphere = Spheres[i];
@@ -212,91 +218,118 @@ public class Spheres {
 			toRet += Math.pow(s.vel[0], 2)+Math.pow(s.vel[1], 2);	
 		}return toRet;
 	}
-	public static double[] getFrequencies(){
-		double[] toRet = new double[Spheres.length];
-		double temp, norm;
-		double[] rad = new double[2];
-		Sphere a;
-		double sum =0;
-		double r2;
-		
-		
-		
-		
-		for(int i=0;i<Spheres.length;i++){
-			a = Spheres[i];
-			rad[0] = a.pos[0] - boundpos[0];
-			rad[1] = a.pos[1] - boundpos[1];
-			norm = norm(rad);
-			if(norm<0.1){
-				continue;
-			}
-			r2 = norm*norm;
-			sum+=r2;
-			temp = rad[0]*a.vel[1]-rad[1]*a.vel[0];
-			temp/=Math.pow(norm, 2);
-			if(!Constants.WEIGHT){
-				r2=1;
-			}
-			toRet[i] = temp*r2;
+
+	public static double[] centerOfMass(){
+		double[] toRet = new double[2];
+		toRet[0]=0.0;
+		toRet[1]=0.0;
+		for(Sphere s: Spheres){
+			toRet[0]+=s.pos[0];
+			toRet[1]+=s.pos[1];
 		}
-		
-		if(Constants.WEIGHT){
-			for(int i=0;i<toRet.length;i++){
-				toRet[i]/=sum;
-			}
-		}
+		toRet[0]/=Constants.NUM_OF_SPHERES;
+		toRet[1]/=Constants.NUM_OF_SPHERES;
 		return toRet;
 	}
 	
 	
-	public static double getVariance(){
-		double toRet=0;
-		double[] freqs = getFrequencies();
-		double a,b;
-		for(int i=0; i<freqs.length;i++){
-			a = freqs[i];
-			for(int j=i+1;j<freqs.length;j++){
-				b = freqs[j];
-				toRet+=Math.pow(a-b,2);
-			}
+	public static double getTheta(){
+	
+		double[] com =centerOfMass();
+		double[] ang1 = new double[2];
+		double[] ang2 = new double[2];
+		ang2[0] = Math.cos(M_ANG);
+		ang2[1] = Math.sin(M_ANG);
+		for(int i=0;i<2;i++){
+			ang1[i] = com[i] - boundpos[i];
 		}
-		toRet/=Math.pow(Constants.NUM_OF_SPHERES,2);
-		return toRet;
-		
+		double norm = norm(ang1);
+		if(norm==0) return 180;
+		double dot = (ang1[0]*ang2[0]+ang1[1]*ang2[1])/norm;
+		return Constants.rad2deg*Math.acos(dot);
 		
 	}
-	public static double getMomenta(){
-		double[] center = {0,0};
-		for(Sphere s:Spheres){
-			center[0] += s.pos[0];
-			center[1] += s.pos[1];
-		}
-		center[0]/=Constants.NUM_OF_SPHERES;
-		center[1]/=Constants.NUM_OF_SPHERES;
-		
+	public static double getTemperature(){
 		double total = 0;
+		double[] vel = new double[2];
+		double temp;
+		for(Sphere s: Spheres){
+			vel[0] = s.vel[0]-boundvel[0];
+			vel[1] = s.vel[1]-boundvel[1];	
+			temp = 1000*norm(vel);
+			total+= Math.pow(temp, 2);	
+		}
+		return total;
+	}
+
+
+	public static double getFreqVariance(){
+		double f_bar = realGetAngVel();
+		double sum = squareSum();
 		double[] radius = new double[2];
-	//	Vector rad,vel;
-		
-		
+		double[] center = centerOfMass();
+		double f, p, norm;
+		double toRet = 0;
+		for(Sphere s: Spheres){
+			radius[0] = s.pos[0] - center[0];
+			radius[1] = s.pos[1] - center[1];
+			norm = norm(radius);
+			f = radius[0]*s.vel[1] - radius[1]*s.vel[0];
+			f*=1000; //because we scaled time
+			f /= Math.pow(norm, 2);
+			p = Math.pow(norm,2)/sum;
+			toRet += Math.pow(f, 2)*p;	
+		}
+		return toRet - Math.pow(f_bar,2);
+	}
+	public static double getAngVel(){
+		return getDist2Center();//realGetAngVel();
+		//return getTheta();
+	}
+	public static double getDensity(double panc_rad){
+		double[] center  = centerOfMass();
+		double[] dist = new double[2];
+		double toRet = 0;
+		for(Sphere s : Spheres){
+			dist[0] = s.pos[0]-center[0];
+			dist[1] = s.pos[1]-center[1];
+			if(norm(dist)>panc_rad){
+				toRet++;
+			}
+		}return toRet;
+	}
+	public static double getDist2Center(){
+		double[] com = centerOfMass();
+		double[] dist = new double[2];
+		dist[0] = com[0]-boundpos[0];
+		dist[1] = com[1]-boundpos[1];
+		return norm(dist);
+	}
+	public static double squareSum(){
+		double toRet =0;
+		double[] radius = new double[2];
+		double[] center = centerOfMass();
+		for(Sphere s: Spheres){
+			radius[0] = s.pos[0] - center[0];
+			radius[1] = s.pos[1] -center[1];
+			toRet+= Math.pow(norm(radius),2);
+		}return toRet;
+	}
+	
+	public static double realGetAngVel(){
+		double[] center = centerOfMass();
+		double[] radius = new double[2];
+
+		double sum = squareSum();
+		double num=0;
 		for(Sphere s: Spheres){
 			radius[0] = s.pos[0]-center[0];
 			radius[1] = s.pos[1]-center[1];
-//			rad = new Vector(radius);
-//			if(rad.norm()!=0){ //this is so unlikely
-//				rad = rad.times(1.0/rad.norm());
-//			}
-//			radius = rad.toArray();
-//			double temp = - radius[1];
-//			radius[1] = radius[0];
-//			radius[0] = temp;
-//			rad = new Vector(radius);			
-//			vel = new Vector(s.vel);
+			num+=(radius[0]*s.vel[1]-radius[1]*s.vel[0]);
 			
-			total += (radius[0]*s.vel[1]-radius[1]*s.vel[0]);
 		}
-		return total;
+		return (1000*num)/sum;//multiply by 1000 because we scaled time. 
+		
 	}
 	
 	
@@ -323,28 +356,6 @@ public class Spheres {
 		}
 		return Math.sqrt(toRet);
 	}
-//	public static void updateVelocities(){
-//		if(Constants.MU==0||Constants.newProcess){
-//			return; //duh
-//		}
-//		double norm,temp;
-//		for(Sphere s: Spheres){
-//			norm =norm(s.vel);
-//			if(norm==0) continue;
-//			for(int i=0;i<Constants.DIMENSIONS;i++){//for loop saves some lines of code
-//				temp = s.vel[i];
-//				s.vel[i]=s.vel[i]-Constants.MU*(s.vel[i]/norm);
-//				if(s.vel[i]*temp<=0){
-//					s.vel[i]=temp;
-//					if(temp>0){//it was originally positive
-//						s.vel[i]=0.01;
-//					}else{
-//						s.vel[i]=-0.01;
-//					}
-//				}
-//			}
-//		}
-//	}
 
 }
 
