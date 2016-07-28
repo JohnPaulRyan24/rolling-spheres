@@ -7,54 +7,64 @@ import config
 
 ################################
 VERBOSE             = 0
-VECTOR              = 1
+VECTOR              = 0
 MFRAME              = 0
-DISPLAY_PINK_BALL   = 0
-DISPLAY_PANCAKE     = 0
+DISPLAY_PINK_BALL   = 1
 ################################
 
-
+####
+# For testing
+DISPLAY_PANCAKE     = 0
+pancfrequency = -0.02842776953935167/(2*np.pi)
+pancradius = 9.2
+#
+####
 
 checkerboard = ( ((0,1,1),(0,1,1)), 
                  ((1,0,0),(1,0,0)) )
 tex = materials.texture(data=checkerboard,
                      mapping="rectangular",
                      interpolate=False)
-def get_input_args():
 
-    
+
+def get_input_args():
     if(len(sys.argv)<2):
         arr = open("args.txt","r").readlines()
-        arr[0] = VERBOSE
-        arr[3] = VECTOR
-        arr[4] = MFRAME
-        arr[5] = DISPLAY_PINK_BALL
-        for line in arr[8:]: print line
-        
+        arr[7] = VERBOSE
+        arr[6] = VECTOR
+        arr[5] = MFRAME
+        arr[4] = DISPLAY_PINK_BALL
     else:
         arr = sys.argv[1:]
-    vector              = False
-    mframe              = False
-    display_pink_ball   = False
-    verbose             = False
-    spinning            = False
-    if(int(arr[0])>0):
-        verbose = True
+        
+    boundvel = float(arr[0])
+    num_of_discs = int(arr[1])
+    R = float(arr[2])
+
+    spinning = False
     if(int(arr[3])>0):
-        vector = True
-    if(int(arr[4])>0):
-        mframe = True
-    if(int(arr[5])>0):
-        display_pink_ball = True
-    if(int(arr[6])>0):
         spinning = True
-    num_of_discs = int(arr[2])
-    boundvel = float(arr[1])
-    R = float(arr[7])
+    
+    display_pink_ball   = False
+    if(DISPLAY_PANCAKE==0 and int(arr[4])>0):
+        display_pink_ball = True
+
+    mframe = False
+    if(int(arr[5])>0):
+        mframe = True
+
+    vector = False
+    if(int(arr[6])>0):
+        vector = True
+ 
+    verbose = False
+    if(int(arr[7])>0):
+        verbose = True
+
     return vector, mframe, display_pink_ball, \
            verbose,spinning,num_of_discs, R, boundvel
 
-if __name__ == '__main__':           
+if __name__ == '__main__':
     speed    =4000
     delta_t  = 2
     boxres   = 10
@@ -106,10 +116,10 @@ if __name__ == '__main__':
         boundary.color=color.black
     
     #Open file with simulation data
-    sim_data = open("input/output.txt","r")
+    sim_data = open("input/sim_data.txt","r")
     collisions = sim_data.readlines()
     #Open file for histogram data output
-    histout = open("2hist_data.txt","w")
+    histout = open("vector_data.txt","w")
     t, prev_nonce, mintime = 0, -1, 10
     if(DISPLAY_PANCAKE):            
         panc = ring(pos = (2,0,0), axis=(0,0,-1), radius =9.2, thickness=0.1, color=color.magenta)
@@ -119,12 +129,11 @@ if __name__ == '__main__':
     for collision in collisions:
         if(DISPLAY_PANCAKE):
             panc.pos = sim_config.center_of_mass()
-            frequency = -0.008
-            omega = (1/1000.0)*(2*np.pi)*frequency
+            omega = (1/1000.0)*(2*np.pi)*pancfrequency
             if(mframe):
                 omega-=(np.pi/6000.0)
-            rot.pos = (panc.pos[0]+9.2*np.cos(omega*totalTime), \
-                                              panc.pos[1]+9.2*np.sin(omega*totalTime),0)
+            rot.pos = (panc.pos[0]+pancradius*np.cos(omega*totalTime), \
+                                              panc.pos[1]+pancradius*np.sin(omega*totalTime),0)
 
         if(vector):
             sim_config.change_arrow(pointer, histout, pink_ball_pos, pink_ball_ang, mframe)

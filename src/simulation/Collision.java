@@ -31,7 +31,6 @@ public class Collision {
 		if(swirl) return false;
 		return spheres.length<2;
 	}
-
 	public void process(){
 		if(!Constants.SPINNING){ //THIS IS SO LAME but it saves time for now
 								//TODO make these two methods into one
@@ -193,11 +192,6 @@ public class Collision {
 		toRet+=String.format("time: %.9f", time);
 		return toRet;
 	}
-
-	
-	
-	
-
 	public void processWithoutSpinning(){
 		double[] ZEROS = {0.0,0.0};
 		if(isBoundary()){
@@ -359,14 +353,5 @@ class Vector{
 	public String toString(){
 		return array[0]+" "+array[1];
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
 

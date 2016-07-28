@@ -86,6 +86,4 @@ class Sim_Config:
         rotated[0] = unrotated[0]*np.cos(ang)-unrotated[1]*np.sin(ang)
         rotated[1] = unrotated[0]*np.sin(ang)+unrotated[1]*np.cos(ang)
         pointer.axis = (rotated[0],rotated[1],0)
-        pointer.pos=(0,self.boundrad,0)
-        histout.write(str(rotated[0])+" "+str(self.boundrad+rotated[1])+"\n")
-        
+        pointer.pos=(0,self.boundrad,0) 

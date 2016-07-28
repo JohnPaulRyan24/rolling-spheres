@@ -13,7 +13,6 @@ public class Spheres {
 	static int index;
 	static double swirl_interval = Constants.swirl_interval;
 	
-	
 	public static void init(){
 		Spheres = new Sphere[Constants.NUM_OF_SPHERES];
 		index = 0;
@@ -26,13 +25,9 @@ public class Spheres {
 		swirlTime=0;
 		M_ANG = 3*Constants.PI/2;
 	}
-	
-	
 	public static void add(Sphere a){
 		Spheres[index++] = a;
 	}
-	
-
 	public static Collision nextCollision(Sphere a, Sphere b){ 
 
 
@@ -56,8 +51,6 @@ public class Spheres {
 		return new Collision(a,b,-1);
 
 	}
-
-	
 	public static Collision nextWallCollision(Sphere a){
 
 		double dv0 = a.vel[0]-boundvel[0];
@@ -79,8 +72,6 @@ public class Spheres {
 		return new Collision(a,-1);
 
 	}
-
-	
 	public static void updatePositions(double time, double totalTime){
 		M_ANG = (-Constants.PI/2)+Constants.PI*totalTime/6000.0;
 		if(M_ANG>2*Constants.PI){
@@ -97,8 +88,6 @@ public class Spheres {
 		boundpos[1]+=time*boundvel[1];
 
 	}
-
-	
 	public static ArrayList<Collision> nextCollision(){ //returns the two spheres 
 		ArrayList<Collision> toRet = new ArrayList<Collision>();
 		
@@ -210,15 +199,12 @@ public class Spheres {
 			swirlTime+=toRet.get(0).time;
 		}
 	}
-	
-	
 	public static double getEnergy(){
 		double toRet = 0;
 		for(Sphere s : Spheres){
 			toRet += Math.pow(s.vel[0], 2)+Math.pow(s.vel[1], 2);	
 		}return toRet;
 	}
-
 	public static double[] centerOfMass(){
 		double[] toRet = new double[2];
 		toRet[0]=0.0;
@@ -231,8 +217,6 @@ public class Spheres {
 		toRet[1]/=Constants.NUM_OF_SPHERES;
 		return toRet;
 	}
-	
-	
 	public static double getTheta(){
 	
 		double[] com =centerOfMass();
@@ -261,8 +245,6 @@ public class Spheres {
 		}
 		return total;
 	}
-
-
 	public static double getFreqVariance(){
 		double f_bar = realGetAngVel();
 		double sum = squareSum();
@@ -283,7 +265,7 @@ public class Spheres {
 		return toRet - Math.pow(f_bar,2);
 	}
 	public static double getAngVel(){
-		return getDist2Center();//realGetAngVel();
+		return realGetAngVel();//realGetAngVel();
 		//return getTheta();
 	}
 	public static double getDensity(double panc_rad){
@@ -296,7 +278,8 @@ public class Spheres {
 			if(norm(dist)>panc_rad){
 				toRet++;
 			}
-		}return toRet;
+		}
+		return toRet;
 	}
 	public static double getDist2Center(){
 		double[] com = centerOfMass();
@@ -315,7 +298,6 @@ public class Spheres {
 			toRet+= Math.pow(norm(radius),2);
 		}return toRet;
 	}
-	
 	public static double realGetAngVel(){
 		double[] center = centerOfMass();
 		double[] radius = new double[2];
@@ -331,24 +313,18 @@ public class Spheres {
 		return (1000*num)/sum;//multiply by 1000 because we scaled time. 
 		
 	}
-	
-	
 	public static double distance(Sphere a, Sphere b){
 		double dist = 0;
 		dist+=Math.pow(a.pos[0]-b.pos[0],2);
 		dist+=Math.pow(a.pos[1]-b.pos[1],2);
 		return Math.sqrt(dist);
 	}
-	
-	
 	public static double distance(Sphere a){
 		double dist = 0;
 		dist+=Math.pow(a.pos[0]-boundpos[0],2);
 		dist+=Math.pow(a.pos[1]-boundpos[1],2);
 		return 5-Math.sqrt(dist);
 	}
-	
-	
 	public static double norm(double[] vel){
 		double toRet=0;
 		for(double i : vel){

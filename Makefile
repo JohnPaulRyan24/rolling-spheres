@@ -5,9 +5,10 @@ N		= 55
 verbose 	= 0
 vector		= 0
 mframe		= 0
-pink		= 1
+pink		= 0
 spinning 	= 0
 R		= 10
+
 
 compile:
 	test -d bin || mkdir bin
@@ -15,17 +16,36 @@ compile:
 
 shrink:
 	java -classpath bin simulation/ShrinkBoundary ${R}
-sim:
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} 0 ${spinning} ${R}
-
-run:
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} 0 ${spinning} ${R}
+hist:
+	# Histogram Mode
 	# Sphere/Sphere Friction: (mu): ${mu}
 	# Wall/Sphere Friction: (wmu): ${wmu}
 	# Amplitude: (amp): ${amp}
 	# Number of Discs (N): ${N}
-	# Pixels-${pixels} Vector-${vector} M-Frame-${mframe} 
-	python animation.py ${verbose} ${amp} ${N} ${vector} ${mframe} ${pink} ${spinning} ${R}
+	# Vector-${vector} M-Frame-${mframe} 
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 1
+	python hist.py
+
+
+sim:
+	# Simulation Mode
+	# Sphere/Sphere Friction: (mu): ${mu}
+	# Wall/Sphere Friction: (wmu): ${wmu}
+	# Amplitude: (amp): ${amp}
+	# Number of Discs (N): ${N}
+	# Vector-${vector} M-Frame-${mframe} 
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 0
+
+run:
+	# Simulation/Animation Mode
+	# Sphere/Sphere Friction: (mu): ${mu}
+	# Wall/Sphere Friction: (wmu): ${wmu}
+	# Amplitude: (amp): ${amp}
+	# Number of Discs (N): ${N}
+	# Vector-${vector} M-Frame-${mframe} 
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 0
+	python animation.py ${amp} ${N} ${R} ${spinning} ${pink} ${mframe} ${vector} ${verbose}
 
 test:
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} 1 ${spinning} ${R}
+	# Testing Mode
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 1 0
