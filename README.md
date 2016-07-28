@@ -15,10 +15,16 @@ in the terminal (whereupon you should see info about the Python that you are run
 
 `import visual` 
 
-If you receive some error message like "No module named visual", then the version you're running isn't accessing the modules installed by the VPython installer. You could try to use a different version of Python for this project using an alias like `alias python="path/to/version2.7/python"` (my path is /usr/local/bin/python, and it seems that /usr/local/bin may be an interesting directory to search for python2.7 - I'm pretty new to this). If you've used virtualenv before, that may also work. Once you successfully import visual, you know you've got the right version.
+If you receive some error message like "No module named visual", then the interpreter you're running isn't accessing the modules installed by the VPython installer. You could try to use a different interpreter of Python for this project using an alias. If you know the location of Version 2.7 of Python on your computer, type
+
+`alias python="path/to/version2.7/python"` 
+
+(my path is /usr/local/bin/python). Using a [virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) may also work. Again, using the Python interpreter in /usr/local/bin/ worked with the VPython installation for me. I am new to the usage of different modules with different interpreters, so if you have insight, feel free to drop me an email. 
+
+Once you successfully import visual, you know you've got the right version.
 
 ### Workaround
-If you can't import the visual module with your version of Python, then you will need to use VIDLE to run the animation. 
+If you can't import the visual module with your interpreter of Python, then you will need to use VIDLE to run the animation.  
 
 
 ![Menu Image](/menu_img.png?raw=true "Menu")
