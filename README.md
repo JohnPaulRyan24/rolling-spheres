@@ -1,4 +1,4 @@
-# Rolling Collisions
+## Rolling Collisions
 All code by John Ryan - john.ryan@nyu.edu
 As part of research project with Prof. Miranda Holmes-Cerfon in CIMS - NYU
 # What is needed to run the simulation:
