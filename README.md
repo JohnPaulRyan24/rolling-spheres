@@ -1,7 +1,7 @@
 # Simulation in 2D of discs inside a swirling boundary
-As the title suggests, the aim of this project is the physical simulation in two dimensions of discs inside a swirling boundary. A video demo can be viewed [here](https://www.youtube.com/watch?v=2OBc-yOkbhs).
+As the title suggests, the aim of this project is the simulation and animation in two dimensions of discs inside a swirling boundary. A video demo can be viewed [here](https://www.youtube.com/watch?v=2OBc-yOkbhs).
 
-The simulation is event-driven. A detailed description of how it works can be found HERE. This README will explain how to get it up and running.
+The simulation is written in Java and is found in src/simulation. The animation is written in Python and is found in animation.py and config.py. A detailed description of how it all works can be found HERE. This README will explain how to get it up and running.
 
 Comments, question, and suggests should go to john.ryan@nyu.edu. Thanks for checking out this project!
 
