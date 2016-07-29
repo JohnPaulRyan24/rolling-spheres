@@ -7,7 +7,7 @@ import subprocess
 root = Tk()
 root['bg']="gray"
 m, s, p, v = IntVar(),IntVar(),IntVar(),IntVar()
-
+no_anim = IntVar()
 def run():
     s1 = " mu="+mu_box.get()
     s2 = " wmu="+wmu_box.get()
@@ -18,9 +18,10 @@ def run():
     s7 = " pink="+str(p.get())
     s8 = " vector="+str(v.get())
    
-
-    print "make sim"+s1+s2+s3+s4+s5+s6+s7+s8
-    subprocess.call("make sim"+s1+s2+s3+s4+s5+s6+s7+s8, shell=True)
+    if(no_anim.get()==1):
+        subprocess.call("make sim"+s1+s2+s3+s4+s5+s6+s7+s8, shell=True)
+    else:
+        subprocess.call("make run"+s1+s2+s3+s4+s5+s6+s7+s8, shell=True)        
 
 
 
@@ -40,6 +41,9 @@ pink = Checkbutton(root, text="Display M (pink ball)", command=None, variable=p)
 pink.grid(row=3,column=3)
 vector = Checkbutton(root, text="Display center of mass vector", command=None, variable=v)
 vector.grid(row=4,column=3)
+
+na_cb = Checkbutton(root, text="No animation", command=None, variable=no_anim)
+na_cb.grid(row=5,column=1)
 
 
 mu_box = Combobox(root, state="readonly")
