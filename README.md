@@ -5,7 +5,9 @@ The simulation is written in Java and is found in src/simulation. The animation 
 
 Comments, question, and suggests should go to john.ryan@nyu.edu. Thanks for checking out this project!
 
-### Dependency
+### Dependencies
+
+Numpy is required for the Python programs.
 
 The animation in this project uses Classic VPython. To install, go to the VPython [website](http://vpython.org/index.html) and click on the appropriate download link in the left-hand sidebar.
 
@@ -41,11 +43,9 @@ in the terminal (whereupon you should see info about the Python that you are run
 
 `import visual` 
 
-If you receive some error message like "No module named visual", then the interpreter you're running isn't accessing the modules installed by the VPython installer. You could try to use a different interpreter of Python for this project using an alias. If you know the location of Version 2.7 of Python on your computer, type
+If you get an error message that the module was not found, then your python interpreter isn't accessing the files installed by the VPython installer. This is a problem that I don't completely know how to solve, and would appreciate any suggestions. Worst case scenario, there is a Workaround (see below).
 
-`alias python="path/to/version2.7/python"` 
-
-(my path is /usr/local/bin/python). Using a [virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) may also work. Again, using the Python interpreter in /usr/local/bin/ worked with the VPython installation for me. I am new to the usage of different modules with different interpreters, so if you have insight, feel free to drop me an email. 
+If you know of another python interpreter (such as /usr/local/bin/python if you downloaded from python.org) that may work, you can change the Makefile to reflect this - change `py=python` to `py=/path/to/different/python`. Another option would be to move the modules to the same folder as the animation.py file. For this reason, I've put the modules at https://github.com/jpryan1/rs-dependencies.
 
 Once you successfully import visual, you know you've got the right version.
 
