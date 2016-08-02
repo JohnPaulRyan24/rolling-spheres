@@ -4,20 +4,20 @@ public class Collision {
 	static double PI = 3.141592653589793;
 	static double SWIRL_ANGLE = (Constants.BOUND_TURN /180.0) * PI;
 	double time;
-	Sphere[] spheres;
+	Disk[] disks;
 	boolean swirl;
-	public Collision(Sphere a, Sphere b, double t){
+	public Collision(Disk a, Disk b, double t){
 		swirl = false;
 		time = t;
-		spheres = new Sphere[2];
-		spheres[0] = a;
-		spheres[1] = b;
+		disks = new Disk[2];
+		disks[0] = a;
+		disks[1] = b;
 	}
-	public Collision(Sphere a, double t){
+	public Collision(Disk a, double t){
 		swirl = false;
 		time = t;
-		spheres = new Sphere[1];
-		spheres[0] = a;
+		disks = new Disk[1];
+		disks[0] = a;
 
 	}
 	public Collision(double t){
@@ -29,7 +29,7 @@ public class Collision {
 	}
 	public boolean isBoundary(){
 		if(swirl) return false;
-		return spheres.length<2;
+		return disks.length<2;
 	}
 	public void process(){
 		if(!Constants.SPINNING){ //THIS IS SO LAME but it saves time for now
@@ -39,10 +39,10 @@ public class Collision {
 		}
 		double[] ZEROS = {0.0,0.0};
 		if(isBoundary()){
-			Sphere s = spheres[0];
+			Disk s = disks[0];
 			double ang = s.theta_vel;
-			Vector boundvel = new Vector(Spheres.boundvel);
-			double[] rad_arg = {s.pos[0]-Spheres.boundpos[0],s.pos[1]-Spheres.boundpos[1]};
+			Vector boundvel = new Vector(Disks.boundvel);
+			double[] rad_arg = {s.pos[0]-Disks.boundpos[0],s.pos[1]-Disks.boundpos[1]};
 			Vector rad = new Vector(rad_arg);
 			double radNorm = rad.norm();
 			rad = rad.times(1/radNorm); //rad is normal.
@@ -79,9 +79,9 @@ public class Collision {
 
 
 		}else if(isSwirl()){
-			double v0 = Spheres.boundvel[0];
-			Spheres.boundvel[0] = Math.cos(SWIRL_ANGLE)*Spheres.boundvel[0]-Math.sin(SWIRL_ANGLE)*Spheres.boundvel[1];
-			Spheres.boundvel[1] = Math.sin(SWIRL_ANGLE)*v0+Math.cos(SWIRL_ANGLE)*Spheres.boundvel[1];
+			double v0 = Disks.boundvel[0];
+			Disks.boundvel[0] = Math.cos(SWIRL_ANGLE)*Disks.boundvel[0]-Math.sin(SWIRL_ANGLE)*Disks.boundvel[1];
+			Disks.boundvel[1] = Math.sin(SWIRL_ANGLE)*v0+Math.cos(SWIRL_ANGLE)*Disks.boundvel[1];
 
 		}
 
@@ -89,8 +89,8 @@ public class Collision {
 		else{	
 			//PART 1: Initialize variables
 			
-			Sphere s1 = spheres[0];
-			Sphere s2 = spheres[1];
+			Disk s1 = disks[0];
+			Disk s2 = disks[1];
 			Vector v1 = new Vector(s1.vel);
 			Vector v2 = new Vector(s2.vel);
 			Vector x1 = new Vector(s1.pos);
@@ -181,10 +181,10 @@ public class Collision {
 		String toRet = "";
 		if(swirl){
 			toRet = "# # -1 "+String.format("%.9f %.9f %.9f %.9f %.9f", 
-					time, Spheres.boundpos[0],Spheres.boundpos[1],Spheres.boundvel[0],Spheres.boundvel[1]);
+					time, Disks.boundpos[0],Disks.boundpos[1],Disks.boundvel[0],Disks.boundvel[1]);
 			return toRet;
 		}
-		for(Sphere a:spheres){
+		for(Disk a: disks){
 			toRet+=String.format("## Id: %d posx: %.9f posy: %.9f velx: %.9f vely: %.9f theta: %.9f thetavel: %.9f ",
 					a.id, a.pos[0] , a.pos[1],a.vel[0],a.vel[1], a.theta, a.theta_vel);
 
@@ -195,10 +195,10 @@ public class Collision {
 	public void processWithoutSpinning(){
 		double[] ZEROS = {0.0,0.0};
 		if(isBoundary()){
-			Sphere s = spheres[0];
+			Disk s = disks[0];
 
-			Vector boundvel = new Vector(Spheres.boundvel);
-			double[] rad_arg = {s.pos[0]-Spheres.boundpos[0],s.pos[1]-Spheres.boundpos[1]};
+			Vector boundvel = new Vector(Disks.boundvel);
+			double[] rad_arg = {s.pos[0]-Disks.boundpos[0],s.pos[1]-Disks.boundpos[1]};
 			Vector rad = new Vector(rad_arg);
 			double radNorm = rad.norm();
 			rad = rad.times(1/radNorm); //rad is normal.
@@ -230,9 +230,9 @@ public class Collision {
 
 
 		}else if(isSwirl()){
-			double v0 = Spheres.boundvel[0];
-			Spheres.boundvel[0] = Math.cos(SWIRL_ANGLE)*Spheres.boundvel[0]-Math.sin(SWIRL_ANGLE)*Spheres.boundvel[1];
-			Spheres.boundvel[1] = Math.sin(SWIRL_ANGLE)*v0+Math.cos(SWIRL_ANGLE)*Spheres.boundvel[1];
+			double v0 = Disks.boundvel[0];
+			Disks.boundvel[0] = Math.cos(SWIRL_ANGLE)*Disks.boundvel[0]-Math.sin(SWIRL_ANGLE)*Disks.boundvel[1];
+			Disks.boundvel[1] = Math.sin(SWIRL_ANGLE)*v0+Math.cos(SWIRL_ANGLE)*Disks.boundvel[1];
 
 		}
 
@@ -240,8 +240,8 @@ public class Collision {
 		else{	
 			//PART 1: Initialize variables
 			
-			Sphere s1 = spheres[0];
-			Sphere s2 = spheres[1];
+			Disk s1 = disks[0];
+			Disk s2 = disks[1];
 			Vector v1 = new Vector(s1.vel);
 			Vector v2 = new Vector(s2.vel);
 			Vector x1 = new Vector(s1.pos);

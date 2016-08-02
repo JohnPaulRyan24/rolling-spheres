@@ -4,7 +4,7 @@ public class Constants {
 	final static int DIMENSIONS = 2;
 	final static double PI = 3.14159265358979;
 	final static double rad2deg = 57.2957795131;
-	static int NUM_OF_SPHERES;
+	static int NUM_OF_DISKS;
 	static double MU;
 	static double WMU;
 	static double BOUNDRAD = 10;
