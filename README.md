@@ -12,7 +12,7 @@ Numpy is required for the Python programs.
 The animation in this project uses Classic VPython. To install, go to the VPython [website](http://vpython.org/index.html) and click on the appropriate download link in the left-hand sidebar.
 
 ### Setting up
-Prepare a folder to contain the files of this project, and clones this repository. You can do this by navigating to that directory and running ```git clone https://github.com/jpryan1/rolling-spheres.git .``` or by clicking the "Clone this repository" button on the Github page. Then, navigate to the directory containing the Makefile.
+Prepare a folder to contain the files of this project, and clones this repository. You can do this by navigating to that directory and running ```git clone https://github.com/jpryan1/swirling-disks.git .``` or by clicking the "Clone this repository" button on the Github page. Then, navigate to the directory containing the Makefile.
 
 ### Running the simulation. 
 Compile the java files by running 
@@ -45,7 +45,7 @@ in the terminal (whereupon you should see info about the Python that you are run
 
 If you get an error message that the module was not found, then your python interpreter isn't accessing the files installed by the VPython installer. This is a problem that I don't completely know how to solve, and would appreciate any suggestions. Worst case scenario, there is a Workaround (see below).
 
-If you know of another python interpreter (such as /usr/local/bin/python if you downloaded from python.org) that may work, you can change the Makefile to reflect this - change `py=python` to `py=/path/to/different/python`. Another option would be to move the modules to the same folder as the animation.py file. For this reason, I've put the modules at https://github.com/jpryan1/rs-dependencies.
+If you know of another python interpreter (such as /usr/local/bin/python if you downloaded from python.org) that may work, you can change the Makefile to reflect this - change `py=python` to `py=/path/to/different/python`. Another option would be to move the modules to the same folder as the animation.py file. For this reason, I've put the modules at https://github.com/jpryan1/sd-dependencies.
 
 Once you successfully import visual, you know you've got the right version.
 
