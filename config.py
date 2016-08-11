@@ -57,10 +57,10 @@ class Sim_Config:
 
 
     def update_boundary(self, line):
-        self.boundpos[0] = float(line[4])
-        self.boundpos[1] = float(line[5])
-        self.boundvel[0] = float(line[6])
-        self.boundvel[1] = float(line[7])
+        self.boundpos[0] = float(line[3])
+        self.boundpos[1] = float(line[4])
+        self.boundvel[0] = float(line[5])
+        self.boundvel[1] = float(line[6])
 
     def center_of_mass(self):
         toRet = [0.0,0.0]

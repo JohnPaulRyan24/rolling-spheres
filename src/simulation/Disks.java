@@ -199,10 +199,18 @@ public class Disks {
 			swirlTime+=toRet.get(0).time;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	public static double getEnergy(){
 		double toRet = 0;
 		for(Disk s : disks){
-			toRet += Math.pow(s.vel[0], 2)+Math.pow(s.vel[1], 2);	
+			toRet += Math.pow(norm(s.vel), 2);
 		}return toRet;
 	}
 	public static double[] centerOfMass(){
@@ -230,7 +238,7 @@ public class Disks {
 		double norm = norm(ang1);
 		if(norm==0) return 180;
 		double dot = (ang1[0]*ang2[0]+ang1[1]*ang2[1])/norm;
-		return Constants.rad2deg*Math.acos(dot);
+		return 180-Constants.rad2deg*Math.acos(dot);
 		
 	}
 	public static double getTemperature(){

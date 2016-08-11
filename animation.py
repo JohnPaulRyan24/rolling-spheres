@@ -149,10 +149,10 @@ if __name__ == '__main__':
             pink_ball.pos = pink_ball_pos
         #Process collision data
         l = collision.split(" ")
-        ID = int(l[2])
+        ID = int(l[1])
         if(ID==-1): #swirl event
-            nonce = int(l[8])
-            time = float(l[3])
+            nonce = int(l[7])
+            time = float(l[2])
             if(nonce!=prev_nonce):
                 while(t<time):
                     sim_config.update_positions() #important
@@ -166,16 +166,19 @@ if __name__ == '__main__':
             t=0
         else:
             posx, posy, velx, vely, theta, theta_vel =\
-                  float(l[4]), float(l[6]), float(l[8]), float(l[10]), float(l[12]), float(l[14])
-            if(len(l)>20):
+                  float(l[3]), float(l[5]), float(l[7]), float(l[9]), float(l[11]), float(l[13])
+            
+            if(len(l)>19):
                 bound = False
                 ID2, posx2, posy2, velx2, vely2, theta2, theta_vel2, time, nonce = \
-                     int(l[17]), float(l[19]), float(l[21]), float(l[23]),\
-                     float(l[25]), float(l[27]), float(l[29]), float(l[31]), float(l[32]) 
+                     int(l[15]), float(l[17]), float(l[19]), float(l[21]),\
+                     float(l[23]), float(l[25]), float(l[27]), float(l[29]), float(l[30])
+                
             else:
                 bound = True
-                time = float(l[16])
-                nonce = int(l[17])
+                time = float(l[15])
+                nonce = int(l[16])
+                
 
             if(verbose and time<mintime):
                 mintime=time

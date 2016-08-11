@@ -86,7 +86,7 @@ public class Simulation {
 			double totalAvg = 0;		
 			double totalTime = 0;
 			for(int i=0;i<Constants.ITERATIONS; i++){		
-				totalAvg 	+= Disks.getTheta();
+				totalAvg 	+= Disks.getEnergy();
 				current = Disks.nextCollision();	
 				totalTime += current.get(0).time;
 				Disks.updatePositions(current.get(0).time, totalTime);

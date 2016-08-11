@@ -180,18 +180,19 @@ public class Collision {
 	public String toString(){
 		String toRet = "";
 		if(swirl){
-			toRet = "# # -1 "+String.format("%.9f %.9f %.9f %.9f %.9f", 
+			toRet = "# -1 "+String.format("%.9f %.9f %.9f %.9f %.9f", 
 					time, Disks.boundpos[0],Disks.boundpos[1],Disks.boundvel[0],Disks.boundvel[1]);
 			return toRet;
 		}
 		for(Disk a: disks){
-			toRet+=String.format("## Id: %d posx: %.9f posy: %.9f velx: %.9f vely: %.9f theta: %.9f thetavel: %.9f ",
+			toRet+=String.format("Id: %d posx: %.9f posy: %.9f velx: %.9f vely: %.9f theta: %.9f thetavel: %.9f ",
 					a.id, a.pos[0] , a.pos[1],a.vel[0],a.vel[1], a.theta, a.theta_vel);
 
 		}
 		toRet+=String.format("time: %.9f", time);
 		return toRet;
 	}
+	
 	public void processWithoutSpinning(){
 		double[] ZEROS = {0.0,0.0};
 		if(isBoundary()){
