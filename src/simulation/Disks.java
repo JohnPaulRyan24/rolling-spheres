@@ -73,6 +73,7 @@ public class Disks {
 
 	}
 	public static void updatePositions(double time, double totalTime){
+		
 		M_ANG = (-Constants.PI/2)+Constants.PI*totalTime/6000.0;
 		if(M_ANG>2*Constants.PI){
 			M_ANG-=2*Constants.PI;
@@ -238,7 +239,7 @@ public class Disks {
 		double norm = norm(ang1);
 		if(norm==0) return 180;
 		double dot = (ang1[0]*ang2[0]+ang1[1]*ang2[1])/norm;
-		return 180-Constants.rad2deg*Math.acos(dot);
+		return Constants.rad2deg*Math.acos(dot);
 		
 	}
 	public static double getTemperature(){
@@ -283,7 +284,7 @@ public class Disks {
 		for(Disk s : disks){
 			dist[0] = s.pos[0]-center[0];
 			dist[1] = s.pos[1]-center[1];
-			if(norm(dist)>panc_rad){
+			if(norm(dist)<=panc_rad){
 				toRet++;
 			}
 		}

@@ -35,7 +35,6 @@ class Sim_Config:
             self.boundpos[i]+=self.boundvel[i]*self.delta_t
             
     def update_animation(self, mframe, pink_ball_ang, boundary):
- 
         if not mframe:
             boundary.pos = (self.boundpos[0],self.boundpos[1],0)
             for i in range(len(self.positions)):
@@ -45,8 +44,9 @@ class Sim_Config:
                 #get position pair in ref frame of M stationary.
         else:
             for i in range(len(self.positions)):
+                #First, stabilize the boundary
                 newpos = [self.positions[i][0]-self.boundpos[0],self.positions[i][1]-self.boundpos[1]]
-                #rotate
+                #Then, rotate the system so that the pink ball is in the north pole.
                 ang = np.pi/2 - pink_ball_ang
                 tmp = newpos[0]*np.cos(ang) - newpos[1]*np.sin(ang)
                 newpos[1] = np.sin(ang)*newpos[0]+np.cos(ang)*newpos[1]
@@ -86,4 +86,4 @@ class Sim_Config:
         rotated[0] = unrotated[0]*np.cos(ang)-unrotated[1]*np.sin(ang)
         rotated[1] = unrotated[0]*np.sin(ang)+unrotated[1]*np.cos(ang)
         pointer.axis = (rotated[0],rotated[1],0)
-        pointer.pos=(0,self.boundrad,0) 
+        pointer.pos=(0,self.boundrad,0)

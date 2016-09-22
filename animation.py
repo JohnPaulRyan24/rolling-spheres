@@ -4,6 +4,11 @@ import math
 import sys
 import config
 
+DISPLAY_PANCAKE     = 1
+stabilize_pancake = 0
+
+speed     = 4000
+delta_t   = 3
 
 ################################
 VERBOSE             = 0
@@ -14,9 +19,8 @@ DISPLAY_PINK_BALL   = 1
 
 ####
 # For testing
-DISPLAY_PANCAKE     = 0
-pancfrequency = -0.02842776953935167/(2*np.pi)
-pancradius = 9.2
+pancradius = 9.4336748
+pancfrequency =  -0.0139027445/(2*np.pi)# (1-(10.0/pancradius))/12.0
 #
 ####
 
@@ -65,17 +69,18 @@ def get_input_args():
            verbose,spinning,num_of_discs, R, boundvel
 
 if __name__ == '__main__':
-    speed    =4000
-    delta_t  = 2
-    boxres   = 10
-    rotations = 0
+    input_file = "input/input.txt"
+    
+    #Set variable from input arguments, either command line or txt file
     vector, mframe, display_pink_ball, verbose,\
             spinning, num_of_discs, boundrad, boundvel = get_input_args()
+    
     if(mframe):
         speed  = speed/4
-    input_file = "input/input.txt"
 
+    #Initialize discs
     discs = []
+    #Set up config object
     sim_config = config.Sim_Config(num_of_discs, input_file,\
                                    delta_t,boundrad, boundvel, spinning, discs)
     
@@ -87,17 +92,18 @@ if __name__ == '__main__':
         pointer = arrow(pos=(0,0,1),axis=(5,0,0), shaftwidth=0.1)
         scene2.select()
         
-    #Initialize discs    
+
     count = 0
-    
+    #If spinning, give special texture
     if(spinning):
         for p in sim_config.positions:
             discs.append(sphere(pos=(p[0],p[1],0), radius=1, material=tex))#, make_trail=True))
 
     else:
         for p in sim_config.positions:
+            #make three different colors
             if(count==0):
-                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.blue))#, make_trail=True))
+                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.blue))
             elif(count==1):
                 discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.red))
             elif(count==2):
@@ -111,9 +117,12 @@ if __name__ == '__main__':
     pink_ball_pos = (0,10,0)
     if(display_pink_ball):
         pink_ball = sphere(pos=pink_ball_pos, radius=1, color=color.magenta, material=None)
+#  white = sphere(pos=(0,0,0), radius=1, color=color.white, material=None)
+
     boundary = ring(pos = (0,0,0), axis=(0,0,-1), radius = boundrad, thickness=0.1, material=None)
+
     if(DISPLAY_PANCAKE):
-        boundary.color=color.black
+        boundary.color=color.black #Boundary invisible if showing pancake
     
     #Open file with simulation data
     sim_data = open("input/sim_data.txt","r")
@@ -121,12 +130,15 @@ if __name__ == '__main__':
     #Open file for histogram data output
     histout = open("vector_data.txt","w")
     t, prev_nonce, mintime = 0, -1, 10
+
     if(DISPLAY_PANCAKE):            
         panc = ring(pos = (2,0,0), axis=(0,0,-1), radius =9.2, thickness=0.1, color=color.magenta)
         rot = sphere(pos=(0,0,0), radius=1, color=color.magenta, material=None)
 
       
     for collision in collisions:
+        # white.pos=sim_config.center_of_mass()
+        
         if(DISPLAY_PANCAKE):
             panc.pos = sim_config.center_of_mass()
             omega = (1/1000.0)*(2*np.pi)*pancfrequency
@@ -134,11 +146,21 @@ if __name__ == '__main__':
                 omega-=(np.pi/6000.0)
             rot.pos = (panc.pos[0]+pancradius*np.cos(omega*totalTime), \
                                               panc.pos[1]+pancradius*np.sin(omega*totalTime),0)
+            #endif
 
         if(vector):
             sim_config.change_arrow(pointer, histout, pink_ball_pos, pink_ball_ang, mframe)
+
         #Update Pink Ball
-        pink_ball_ang = (-np.pi/2)+np.pi*totalTime/6000.0
+        if(not stabilize_pancake):
+            pink_ball_ang = (-np.pi/2)+2*np.pi*totalTime*(1/12000.0)
+        #stabilizing pancake, just give pink_ball_ang the pancake frequency and use m-frame
+        else:
+            pink_ball_ang = (-np.pi/2)+2*np.pi*totalTime*(pancfrequency/1000)
+
+
+
+
         while(pink_ball_ang>2*np.pi):
             pink_ball_ang-=(2*np.pi)
        

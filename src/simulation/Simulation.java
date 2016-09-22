@@ -5,18 +5,19 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Simulation {
 	public static void muTest() throws FileNotFoundException{
 		PrintWriter m = new PrintWriter(new File("MU_"+Constants.WMU+"_"+Constants.bound_vel+"_"+Constants.NUM_OF_DISKS+".txt"));
-		for(int d = 0; d<=100; d+= 1){
-			Constants.MU = d/10.0;
+		for(int d = 0; d<=50; d+= 1){
+			Constants.MU = d/100.0;
 		
 			initializeDisks();
 			ArrayList<Collision> current;
 			double totalAvg = 0;		
 			double totalTime = 0;
 			for(int i=0;i<Constants.ITERATIONS; i++){		
-				totalAvg 	+= Disks.getAngVel();
+				totalAvg 	+= Disks.getDist2Center();
 				current = Disks.nextCollision();	
 				totalTime += current.get(0).time;
 				Disks.updatePositions(current.get(0).time, totalTime);
@@ -78,15 +79,19 @@ public class Simulation {
 	public static void DisknumTest() throws FileNotFoundException{
 		PrintWriter m = new PrintWriter(new File("NUM_"+Constants.MU+"_"+Constants.WMU+"_"+Constants.bound_vel+".txt"));
 		
+
 		for(int d = 10; d<=60; d++){
 			Constants.NUM_OF_DISKS = d;
 			
 			initializeDisks();
 			ArrayList<Collision> current;
-			double totalAvg = 0;		
+			double totalAvg = 0;	
+			double avgDist= 0;
 			double totalTime = 0;
-			for(int i=0;i<Constants.ITERATIONS; i++){		
-				totalAvg 	+= Disks.getEnergy();
+			for(int i=0;i<Constants.ITERATIONS; i++){	
+				
+				totalAvg 	+= Disks.realGetAngVel();
+				avgDist		+= Disks.getDist2Center();
 				current = Disks.nextCollision();	
 				totalTime += current.get(0).time;
 				Disks.updatePositions(current.get(0).time, totalTime);
@@ -98,7 +103,10 @@ public class Simulation {
 				}
 			}	
 			totalAvg/=Constants.ITERATIONS;//(totalTime/1000.0);
-			m.println(Constants.NUM_OF_DISKS+" "+totalAvg);
+			avgDist /=Constants.ITERATIONS;
+			double avgRadius = 10-avgDist;
+			double predict = 2*Constants.PI*(1- (Constants.BOUNDRAD/avgRadius) ) /12.0;
+			m.println(Constants.NUM_OF_DISKS+" "+(totalAvg-predict)/totalAvg);
 		}
 		m.close();
 	}
@@ -123,6 +131,7 @@ public class Simulation {
 	
 	
 	public static void main(String[] args) throws FileNotFoundException{
+		// Initialize all variables
 		int testing = Integer.parseInt(args[6]);
 		int hist = Integer.parseInt(args[7]);
 		if(testing==1){
@@ -133,12 +142,11 @@ public class Simulation {
 		if(hist==1){
 			makeHistograms = true;
 		}
-		
 		setConstants(args);
 		initializeDisks();
 		
-		PrintWriter p = new PrintWriter(new File("input/sim_data.txt"));
 		
+		PrintWriter p = new PrintWriter(new File("input/sim_data.txt"));
 		PrintWriter hist_s = null, hist_w=null;
 		if(makeHistograms) {
 			hist_s = new PrintWriter(new File("hist_data_s.txt"));
@@ -148,7 +156,7 @@ public class Simulation {
 		long start = System.currentTimeMillis();
 		
 		int nonce = 0;
-		double totalAvg = 0, currentAngVel = 0,  totalTime = 0;
+		double totalAvg = 0, currentAngVel = 0,  totalTime = 0, totalDist = 0;;
 		
 		ArrayList<Collision> currentCollision;
 		currentAngVel = Disks.getAngVel();
@@ -158,7 +166,7 @@ public class Simulation {
 
 		for(int i=0;i<Constants.ITERATIONS; i++){
 			totalAvg 	+= currentAngVel;
-			
+			totalDist	+= Disks.getDist2Center();
 			currentCollision = Disks.nextCollision();	
 			totalTime+=currentCollision.get(0).time;
 			Disks.updatePositions(currentCollision.get(0).time, totalTime);
@@ -169,6 +177,8 @@ public class Simulation {
 			}
 			currentAngVel = Disks.getAngVel();
 			nonce++;
+			
+			
 			if(makeHistograms){
 				if(!currentCollision.get(0).isSwirl()&&!currentCollision.get(0).isBoundary()){
 					hist_s.println(currentAngVel-pastAngVel);
@@ -186,6 +196,7 @@ public class Simulation {
 		
 		totalAvg/=Constants.ITERATIONS;
 		System.out.println("Average Angular Velocity: "+totalAvg+"<br>");
+		System.out.println("Average Pancake Radius: "+(10-totalDist/Constants.ITERATIONS)+"<br>");
 		long end = System.currentTimeMillis();
 		System.out.printf("Simulation took %d milliseconds.\n",(end-start));
 		
