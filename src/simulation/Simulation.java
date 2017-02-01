@@ -80,7 +80,7 @@ public class Simulation {
 		PrintWriter m = new PrintWriter(new File("NUM_"+Constants.MU+"_"+Constants.WMU+"_"+Constants.bound_vel+".txt"));
 		
 
-		for(int d = 10; d<=60; d++){
+		for(int d = 10; d<=56; d++){
 			Constants.NUM_OF_DISKS = d;
 			
 			initializeDisks();
@@ -104,7 +104,7 @@ public class Simulation {
 			}	
 			totalAvg/=Constants.ITERATIONS;//(totalTime/1000.0);
 			avgDist /=Constants.ITERATIONS;
-			double avgRadius = 10-avgDist;
+			double avgRadius = Constants.BOUNDRAD-avgDist;
 			double predict = 2*Constants.PI*(1- (Constants.BOUNDRAD/avgRadius) ) /12.0;
 			m.println(Constants.NUM_OF_DISKS+" "+(totalAvg-predict)/totalAvg);
 		}

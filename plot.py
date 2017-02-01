@@ -2,21 +2,39 @@ import matplotlib.pyplot as plt
 import sys
 import time
 
-yaxis ="Density"# "Discs not in pancake"
-f = open(sys.argv[1], "r")
+yaxis = "Percent error"
+f = open("data.txt", "r")
+#g = open("data1.txt", "r")
+#h = open("data2.txt", "r")
+
 lines = f.readlines()
 times = []
 energies = []
+energies1 = []
+energies2 = []
 for line in lines:
     l = line.split(" ")
     times.append(float(l[0]))
     energies.append(float(l[1]))
+#
+#lines1 = g.readlines()
+#for line in lines1:
+#    l = line.split(" ")
+#    energies1.append(float(l[1]))
+#
+#lines2 = h.readlines()
+#for line in lines2:
+#    l = line.split(" ")
+#    energies2.append(float(l[1]))
 
-plt.plot(times,energies,'-r')
+plt.plot(times[20:],energies[20:],'-r')#, label = "WMu=0")
+#plt.plot(times,energies1,'-b', label = "WMu=1")
+#plt.plot(times,energies2,'-g',label = "WMu=2" )
+#plt.legend()
 #plt.xscale('log')
 #plt.yscale('log')
-plt.title("Default: Mu=1 WMu=0.1 Amp=0.5 N=55")
-plt.xlabel("Number of Spheres")
+plt.title("Error of predicted angular velocity")
+plt.xlabel("N")
 plt.ylabel(yaxis)
 #plt.title(test+": "+testnum)
 plt.show()

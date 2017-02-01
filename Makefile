@@ -7,8 +7,8 @@ vector		= 0
 mframe		= 0
 pink		= 0
 spinning 	= 0
-R		= 10
-
+R		= 9.1
+py		= python
 
 compile:
 	test -d bin || mkdir bin
@@ -23,8 +23,9 @@ hist:
 	# Amplitude: (amp): ${amp}
 	# Number of Discs (N): ${N}
 	# Vector-${vector} M-Frame-${mframe} 
-	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 1
-	python hist.py
+	# Pink-${pink}  Spinning-${spinning}
+	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 1 
+	${py} hist.py
 
 
 sim:
@@ -34,6 +35,7 @@ sim:
 	# Amplitude: (amp): ${amp}
 	# Number of Discs (N): ${N}
 	# Vector-${vector} M-Frame-${mframe} 
+	# Pink-${pink}  Spinning-${spinning}
 	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 0
 
 run:
@@ -43,8 +45,11 @@ run:
 	# Amplitude: (amp): ${amp}
 	# Number of Discs (N): ${N}
 	# Vector-${vector} M-Frame-${mframe} 
+	# Pink-${pink}  Spinning-${spinning}
+
 	java -classpath bin simulation/Simulation ${mu} ${wmu} ${amp} ${N} ${spinning} ${R} 0 0
-	python animation.py ${amp} ${N} ${R} ${spinning} ${pink} ${mframe} ${vector} ${verbose}
+	${py} animation.py ${amp} ${N} ${R} ${spinning} ${pink} ${mframe} ${vector} ${verbose}
+
 
 test:
 	# Testing Mode

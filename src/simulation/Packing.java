@@ -8,11 +8,11 @@ public class Packing {
 		double[][] parr = new double[4][2];
 		parr[0][0] = 0;
 		parr[0][1] = 0;
-		parr[1][0] = 2.1;
+		parr[1][0] = 2.01;
 		parr[1][1] = 0;
-		parr[2][0] = 1.05;
+		parr[2][0] = 1.005;
 		parr[2][1] = 2;
-		parr[3][0] = 3.15;
+		parr[3][0] = 3.015;
 		parr[3][1] = 2;
 		int counter=0;
 		double x = 0;

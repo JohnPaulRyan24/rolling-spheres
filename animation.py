@@ -4,11 +4,11 @@ import math
 import sys
 import config
 
-DISPLAY_PANCAKE     = 1
+DISPLAY_PANCAKE     = 0
 stabilize_pancake = 0
 
-speed     = 4000
-delta_t   = 3
+speed     = 1000
+delta_t   = 1
 
 ################################
 VERBOSE             = 0
@@ -103,9 +103,9 @@ if __name__ == '__main__':
         for p in sim_config.positions:
             #make three different colors
             if(count==0):
-                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.blue))
+                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.yellow))
             elif(count==1):
-                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.red))
+                discs.append(sphere(pos=(p[0],p[1],0), radius=1, color=color.cyan))
             elif(count==2):
                 discs.append(sphere(pos=(p[0],p[1],0), radius=1,  color=color.green))
             count+=1
